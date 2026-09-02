@@ -3,569 +3,746 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecurePay — Fraud Detection</title>
+    <title>SecurePay — Risk Analysis</title>
     <meta name="description" content="Real-time fraud detection powered by XGBoost and graph ring analysis.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bodoni+Moda:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg:        #F6F8FA;
+            --surface:   #FFFFFF;
+            --border:    #E2E8F0;
+
+            --indigo:    #5147E5;
+            --indigo-dk: #3e36c7;
+            --indigo-lt: #EEF2FF;
+
+            --t1:  #0F172A;
+            --t2:  #475569;
+            --t3:  #94A3B8;
+
+            --red:       #DC2626;
+            --red-bg:    #FEF2F2;
+            --red-bd:    #FECACA;
+
+            --green:     #16A34A;
+            --green-bg:  #F0FDF4;
+            --green-bd:  #BBF7D0;
+
+            --amber:     #D97706;
+            --amber-bg:  #FFFBEB;
+            --amber-bd:  #FDE68A;
+
+            --orange:    #EA580C;
+            --orange-bg: #FFF7ED;
+            --orange-bd: #FDBA74;
+
+            --r:   8px;
+            --r-lg: 12px;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #F5F1E8 0%, #E8DCC4 100%);
+            background: var(--bg);
+            color: var(--t1);
+            font-size: 14px;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* ── Header ── */
-        .header {
-            background: #1a1a2e;
+        /* ── Topbar ── */
+        .topbar {
+            height: 52px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 10px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .brand-mark {
+            width: 28px; height: 28px;
+            background: var(--indigo);
+            border-radius: 7px;
             color: white;
-            padding: 18px 40px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.25);
-        }
-        .header-icon { font-size: 26px; }
-        .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
-        .header-sub { font-size: 12px; opacity: 0.55; margin-top: 1px; }
-
-        /* ── Layout ── */
-        .container {
-            display: flex;
-            flex: 1;
-            min-height: calc(100vh - 62px);
-        }
-
-        /* ── LEFT: Results ── */
-        .left-panel {
-            flex: 1.05;
-            background: #FAF8F3;
-            padding: 36px 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-right: 1px solid #D4C5A9;
-            overflow-y: auto;
-        }
-
-        .result-container { width: 100%; max-width: 520px; }
-
-        /* placeholder */
-        .placeholder {
-            text-align: center;
-            color: #aaa;
-            font-size: 15px;
-            padding: 60px 0;
-        }
-        .placeholder-icon { font-size: 52px; margin-bottom: 14px; }
-
-        /* ── Main verdict card ── */
-        .verdict-card {
-            background: white;
-            border-radius: 16px;
-            padding: 30px 28px 24px;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-            margin-bottom: 16px;
-            text-align: center;
-            border-top: 4px solid transparent;
-            transition: border-color 0.3s;
-        }
-        .verdict-card.fraud  { border-color: #e63946; }
-        .verdict-card.legit  { border-color: #2a9d5c; }
-
-        .verdict-emoji { font-size: 52px; margin-bottom: 10px; display: block; }
-
-        .verdict-label {
-            font-size: 26px;
+            font-size: 12px;
             font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 4px;
-        }
-
-        .verdict-subtitle { font-size: 13px; color: #888; margin-bottom: 20px; }
-
-        /* Score row */
-        .scores-row {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            margin: 20px 0 16px;
+            place-items: center;
         }
-        .score-cell {
-            background: #F5F1E8;
-            border-radius: 10px;
-            padding: 12px 8px;
-            text-align: center;
-        }
-        .score-cell .sc-label {
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #888;
-            margin-bottom: 5px;
-        }
-        .score-cell .sc-value {
-            font-size: 22px;
+        .brand-name {
+            font-size: 14px;
             font-weight: 700;
-            color: #1a1a2e;
+            color: var(--t1);
+            letter-spacing: -0.2px;
         }
-        .score-cell .sc-value.fraud-col { color: #e63946; }
-        .score-cell .sc-value.ring-col  { color: #e07b39; }
-        .score-cell .sc-value.final-col { color: #1a1a2e; }
-
-        /* Risk badges */
-        .badges-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
-        .badge {
+        .live-pill {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 6px 14px;
+            gap: 4px;
+            padding: 2px 8px;
+            background: var(--green-bg);
+            border: 1px solid var(--green-bd);
             border-radius: 20px;
+            font-size: 10px;
             font-weight: 600;
+            color: var(--green);
+        }
+        .live-dot {
+            width: 5px; height: 5px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-btn {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--r);
             font-size: 12px;
+            font-weight: 500;
+            color: var(--t2);
+            background: var(--surface);
+            cursor: pointer;
+            transition: border-color .15s, color .15s;
         }
-        .badge-high   { background: #FFE5E8; color: #c1121f; }
-        .badge-medium { background: #FFF3CD; color: #856404; }
-        .badge-low    { background: #D4EDDA; color: #155724; }
-        .badge-ring   { background: #FEF3E2; color: #c05621; }
-        .badge-clean  { background: #EDF2FF; color: #3b5bdb; }
-
-        /* ── Ring panel ── */
-        .ring-card {
-            background: white;
-            border-radius: 14px;
-            padding: 20px 22px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
-            margin-bottom: 16px;
-            border-left: 4px solid #e07b39;
+        .back-btn:hover { border-color: #94A3B8; color: var(--t1); }
+        .docs-btn {
+            padding: 5px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--t2);
+            text-decoration: none;
+            transition: border-color .15s;
         }
-        .ring-card.clean { border-left-color: #2a9d5c; }
+        .docs-btn:hover { border-color: #94A3B8; color: var(--t1); }
 
-        .ring-card-title {
-            font-size: 13px;
+        /* ── Page ── */
+        .page {
+            min-height: calc(100vh - 52px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px 60px;
+        }
+
+        /* ── Views ── */
+        .view {
+            width: 100%;
+            max-width: 640px;
+            transition: opacity .35s ease, transform .35s ease;
+        }
+        .view.hidden {
+            display: none;
+        }
+        .view.fade-in  { animation: fadeUp .35s ease both; }
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(14px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        /* ── Form view ── */
+        .view-title {
+            font-size: 22px;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #666;
-            margin-bottom: 12px;
+            letter-spacing: -0.4px;
+            color: var(--t1);
+            margin-bottom: 4px;
+        }
+        .view-sub {
+            font-size: 13px;
+            color: var(--t3);
+            margin-bottom: 28px;
+        }
+
+        /* Preset row */
+        .preset-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        .preset {
+            padding: 9px 14px;
+            border-radius: var(--r);
+            border: 1px solid;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
+            transition: filter .15s;
         }
+        .preset:hover { filter: brightness(.96); }
+        .preset-fraud { background: var(--red-bg);   border-color: var(--red-bd);   color: var(--red);   }
+        .preset-legit { background: var(--green-bg); border-color: var(--green-bd); color: var(--green); }
 
-        .ring-rows { display: flex; flex-direction: column; gap: 8px; }
-        .ring-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
+        /* Form card */
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            overflow: hidden;
         }
-        .ring-row .rr-key { color: #888; }
-        .ring-row .rr-val { font-weight: 600; color: #1a1a2e; font-size: 13px; }
-        .ring-row .rr-val.warn { color: #e07b39; }
+        .form-section {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .form-section:last-child { border-bottom: none; }
 
-        /* ── Summary card ── */
-        .summary-card {
-            background: white;
-            border-radius: 14px;
-            padding: 22px 24px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
-        }
-        .summary-card-title {
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #666;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-        .summary-text {
-            font-family: 'Bodoni Moda', serif;
-            font-size: 15.5px;
-            line-height: 1.75;
-            color: #444;
-        }
-
-        /* ── RIGHT: Form ── */
-        .right-panel {
-            flex: 1;
-            background: #F5F1E8;
-            padding: 36px 40px;
-            overflow-y: auto;
-        }
-
-        .form-title {
-            font-size: 19px;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 6px;
-        }
-        .form-desc { font-size: 13px; color: #999; margin-bottom: 24px; }
-
-        /* section headers inside form */
-        .form-section-label {
+        .section-label {
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #aaa;
-            margin: 18px 0 10px;
+            letter-spacing: .07em;
+            color: var(--t3);
+            margin-bottom: 12px;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
-        .form-grid.one   { grid-template-columns: 1fr; }
+        .fgrid   { display: grid; gap: 10px; }
+        .fgrid-2 { grid-template-columns: 1fr 1fr; }
+        .fgrid-3 { grid-template-columns: 1fr 1fr 1fr; }
 
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label {
-            font-size: 12px;
-            font-weight: 500;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .form-group input,
-        .form-group select {
-            padding: 9px 11px;
-            border: 1px solid #D4C5A9;
-            border-radius: 7px;
+        .fgroup { display: flex; flex-direction: column; gap: 4px; }
+        .fgroup label { font-size: 11px; font-weight: 500; color: var(--t2); }
+        .fgroup input, .fgroup select {
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--r);
             font-size: 13px;
-            font-family: 'Inter', sans-serif;
-            background: white;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            color: #1a1a2e;
+            font-family: inherit;
+            color: var(--t1);
+            background: var(--surface);
+            transition: border-color .15s, box-shadow .15s;
+            -webkit-appearance: none;
         }
-        .form-group input:focus,
-        .form-group select:focus {
+        .fgroup input::placeholder { color: var(--t3); }
+        .fgroup input:focus, .fgroup select:focus {
             outline: none;
-            border-color: #1a1a2e;
-            box-shadow: 0 0 0 3px rgba(26,26,46,0.07);
+            border-color: var(--indigo);
+            box-shadow: 0 0 0 3px rgba(81,71,229,.1);
         }
 
-        .predict-btn {
+        .submit-btn {
             width: 100%;
-            padding: 13px;
-            background: #1a1a2e;
+            padding: 11px;
+            background: var(--indigo);
             color: white;
             border: none;
-            border-radius: 9px;
-            font-size: 15px;
+            border-radius: var(--r);
+            font-size: 14px;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
-            margin-top: 22px;
-            transition: background 0.25s, transform 0.1s;
-            letter-spacing: 0.01em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background .15s, transform .1s;
+            margin-top: 20px;
         }
-        .predict-btn:hover  { background: #0f0f1f; }
-        .predict-btn:active { transform: scale(0.99); }
-        .predict-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+        .submit-btn:hover { background: var(--indigo-dk); }
+        .submit-btn:active { transform: scale(.99); }
+        .submit-btn:disabled { background: var(--border); color: var(--t3); cursor: not-allowed; transform: none; }
 
-        /* spinner inside button */
-        .btn-spinner {
-            display: inline-block;
+        .spinner {
             width: 14px; height: 14px;
-            border: 2px solid rgba(255,255,255,0.4);
-            border-top-color: white;
+            border: 2px solid rgba(255,255,255,.3);
+            border-top-color: #fff;
             border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            vertical-align: middle;
-            margin-right: 8px;
+            animation: spin .65s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* fade-in for results */
-        @keyframes fadeSlideIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
+        /* ── Results view ── */
+        /* Verdict */
+        .verdict {
+            border-radius: var(--r-lg);
+            padding: 20px;
+            border: 1px solid;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
         }
-        .animate-in { animation: fadeSlideIn 0.3s ease forwards; }
+        .verdict.fraud { background: var(--red-bg);   border-color: var(--red-bd);   }
+        .verdict.legit { background: var(--green-bg); border-color: var(--green-bd); }
 
-        /* progress bar */
-        .score-bar-wrap { margin-top: 6px; }
-        .score-bar-track {
-            height: 5px;
-            background: #EEE;
-            border-radius: 4px;
+        .verdict-icon {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+        .verdict.fraud .verdict-icon { background: var(--red);   }
+        .verdict.legit .verdict-icon { background: var(--green); }
+
+        .verdict-text { flex: 1; }
+        .verdict-label {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -.3px;
+        }
+        .verdict.fraud .verdict-label { color: var(--red);   }
+        .verdict.legit .verdict-label { color: var(--green); }
+        .verdict-sub   { font-size: 12px; color: var(--t2); margin-top: 2px; }
+
+        .pill-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+        .pill-red    { background:var(--red-bg);    border-color:var(--red-bd);    color:var(--red);    }
+        .pill-green  { background:var(--green-bg);  border-color:var(--green-bd);  color:var(--green);  }
+        .pill-amber  { background:var(--amber-bg);  border-color:var(--amber-bd);  color:var(--amber);  }
+        .pill-orange { background:var(--orange-bg); border-color:var(--orange-bd); color:var(--orange); }
+        .pill-slate  { background:#F1F5F9;           border-color:var(--border);    color:var(--t2);     }
+        .pill-indigo { background:var(--indigo-lt); border-color:#C7D2FE;           color:var(--indigo); }
+
+        /* Score cards */
+        .score-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .score-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 16px;
+        }
+        .score-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--t3);
+            margin-bottom: 8px;
+        }
+        .score-val {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -.5px;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+        .col-red    { color: var(--red);    }
+        .col-orange { color: var(--orange); }
+        .col-indigo { color: var(--indigo); }
+
+        .bar-track { height: 3px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+        .bar-fill  { height: 100%; border-radius: 4px; transition: width .7s cubic-bezier(.4,0,.2,1); }
+        .bar-red    { background: var(--red);    }
+        .bar-orange { background: var(--orange); }
+        .bar-indigo { background: var(--indigo); }
+
+        .score-src { font-size: 10px; color: var(--t3); margin-top: 5px; }
+
+        /* Info card */
+        .info-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
             overflow: hidden;
+            margin-bottom: 12px;
         }
-        .score-bar-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.6s ease;
+        .info-card.ring-active { border-color: var(--orange-bd); }
+
+        .card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 7px;
         }
-        .bar-fraud  { background: #e63946; }
-        .bar-ring   { background: #e07b39; }
-        .bar-final  { background: #1a1a2e; }
+        .card-header-title { font-size: 13px; font-weight: 600; flex: 1; }
+
+        .card-body { padding: 4px 0; }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .row:last-child { border-bottom: none; }
+        .row-key { color: var(--t2); font-weight: 500; }
+        .row-val { font-weight: 600; font-variant-numeric: tabular-nums; }
+        .row-val.ok   { color: var(--green);  }
+        .row-val.warn { color: var(--orange); }
+        .row-val.bad  { color: var(--red);    }
+
+        /* Summary */
+        .summary-text {
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: var(--t2);
+            padding: 16px;
+        }
+
+        /* Animations for result cards */
+        .r1 { animation: fadeUp .3s ease both; }
+        .r2 { animation: fadeUp .3s .07s ease both; }
+        .r3 { animation: fadeUp .3s .14s ease both; }
+        .r4 { animation: fadeUp .3s .21s ease both; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <span class="header-icon">🛡</span>
-        <div>
-            <h1>SecurePay — Fraud Detection</h1>
-            <div class="header-sub">XGBoost · Graph Ring Analysis · Groq AI Explanations</div>
-        </div>
-    </div>
 
-    <div class="container">
-        <!-- LEFT: Results -->
-        <div class="left-panel">
-            <div class="result-container" id="resultContainer">
-                <div class="placeholder">
-                    <div class="placeholder-icon">🔍</div>
-                    Enter transaction details and click<br><strong>Analyse Transaction</strong>
+<!-- Topbar -->
+<header class="topbar">
+    <a href="/" class="brand">
+        <div class="brand-mark">SP</div>
+        <span class="brand-name">SecurePay</span>
+    </a>
+    <span class="live-pill">
+        <span class="live-dot"></span>Live
+    </span>
+    <div class="topbar-right">
+        <button class="back-btn" id="backBtn" onclick="showForm()">← New Analysis</button>
+        <a href="/docs" target="_blank" class="docs-btn">API Docs ↗</a>
+    </div>
+</header>
+
+<!-- Page -->
+<div class="page">
+
+    <!-- ── FORM VIEW ── -->
+    <div class="view" id="formView">
+        <div class="view-title">Risk Analysis</div>
+        <div class="view-sub">Enter transaction details to run fraud and ring detection.</div>
+
+        <!-- Presets -->
+        <div class="preset-row">
+            <button class="preset preset-fraud" id="loadFraud" type="button">🚨 Load Fraud Sample</button>
+            <button class="preset preset-legit" id="loadLegit" type="button">✅ Load Legit Sample</button>
+        </div>
+
+        <!-- Form -->
+        <form id="txnForm">
+            <div class="form-card">
+
+                <div class="form-section">
+                    <div class="section-label">Account IDs <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">(optional — enables ring lookup)</span></div>
+                    <div class="fgrid fgrid-2">
+                        <div class="fgroup">
+                            <label>Sender (nameOrig)</label>
+                            <input id="nameOrig" type="text" placeholder="e.g. C1503476614">
+                        </div>
+                        <div class="fgroup">
+                            <label>Receiver (nameDest)</label>
+                            <input id="nameDest" type="text" placeholder="e.g. M938657528">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-label">Transaction</div>
+                    <div class="fgrid fgrid-2" style="margin-bottom:10px">
+                        <div class="fgroup">
+                            <label>Amount ($)</label>
+                            <input id="amount" type="number" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="fgroup">
+                            <label>Type</label>
+                            <select id="txn_type" required>
+                                <option value="">Select type</option>
+                                <option value="CASH_IN">Cash In</option>
+                                <option value="CASH_OUT">Cash Out</option>
+                                <option value="DEBIT">Debit</option>
+                                <option value="PAYMENT">Payment</option>
+                                <option value="TRANSFER">Transfer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="fgrid fgrid-3">
+                        <div class="fgroup">
+                            <label>Hour of Day (0–23)</label>
+                            <input id="hours_day" type="number" min="0" max="23" placeholder="14" required>
+                        </div>
+                        <div class="fgroup">
+                            <label>Hrs Since Last Txn</label>
+                            <input id="recency_hours" type="number" step="0.1" placeholder="24" required>
+                        </div>
+                        <div class="fgroup">
+                            <label>Txns in Last 24h</label>
+                            <input id="txn_count_24h" type="number" placeholder="0" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-label">Origin Account Balances</div>
+                    <div class="fgrid fgrid-2">
+                        <div class="fgroup">
+                            <label>Balance Before ($)</label>
+                            <input id="oldbalanceOrg" type="number" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="fgroup">
+                            <label>Balance After ($)</label>
+                            <input id="newbalanceOrig" type="number" step="0.01" placeholder="0.00" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-label">Destination Account Balances</div>
+                    <div class="fgrid fgrid-2">
+                        <div class="fgroup">
+                            <label>Balance Before ($)</label>
+                            <input id="oldbalanceDest" type="number" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="fgroup">
+                            <label>Balance After ($)</label>
+                            <input id="newbalanceDest" type="number" step="0.01" placeholder="0.00" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-label">Behavioural Flags</div>
+                    <div class="fgrid" style="max-width:300px">
+                        <div class="fgroup">
+                            <label>New Destination?</label>
+                            <select id="is_dest_new" required>
+                                <option value="0">No — known recipient</option>
+                                <option value="1">Yes — first-time recipient</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /form-card -->
+
+            <button type="button" class="submit-btn" id="submitBtn" onclick="runAnalysis()">
+                Run Analysis
+            </button>
+        </form>
+    </div><!-- /formView -->
+
+    <!-- ── RESULTS VIEW ── -->
+    <div class="view hidden" id="resultsView"></div>
+
+</div><!-- /page -->
+
+<script>
+    /* ── Presets ── */
+    const PRESETS = {
+        fraud: { nameOrig:'C1503476614', nameDest:'C539633851', amount:181935.37, txn_type:'TRANSFER', hours_day:3, recency_hours:1000000, txn_count_24h:0, is_dest_new:'1', oldbalanceOrg:181935.37, newbalanceOrig:0, oldbalanceDest:0, newbalanceDest:0 },
+        legit: { nameOrig:'C423543548',  nameDest:'M1490931456', amount:4200,    txn_type:'PAYMENT',  hours_day:9, recency_hours:48,      txn_count_24h:0, is_dest_new:'0', oldbalanceOrg:18543,     newbalanceOrig:14343, oldbalanceDest:0, newbalanceDest:0 },
+    };
+
+    function fill(p) {
+        ['nameOrig','nameDest','amount','hours_day','recency_hours','txn_count_24h','is_dest_new',
+         'oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest'].forEach(k => {
+            document.getElementById(k).value = p[k];
+        });
+        document.getElementById('txn_type').value = p.txn_type;
+    }
+    document.getElementById('loadFraud').onclick = () => fill(PRESETS.fraud);
+    document.getElementById('loadLegit').onclick = () => fill(PRESETS.legit);
+
+    /* ── Show / hide views ── */
+    function showForm() {
+        document.getElementById('resultsView').classList.add('hidden');
+        const fv = document.getElementById('formView');
+        fv.classList.remove('hidden');
+        fv.classList.add('fade-in');
+        document.getElementById('backBtn').style.display = 'none';
+        setTimeout(() => fv.classList.remove('fade-in'), 400);
+    }
+
+    function showResults(html) {
+        document.getElementById('formView').classList.add('hidden');
+        const rv = document.getElementById('resultsView');
+        rv.innerHTML = html;
+        rv.classList.remove('hidden');
+        rv.classList.add('fade-in');
+        document.getElementById('backBtn').style.display = 'flex';
+        setTimeout(() => rv.classList.remove('fade-in'), 400);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ── Run analysis ── */
+    async function runAnalysis() {
+        const form = document.getElementById('txnForm');
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Analysing…';
+
+        const t = document.getElementById('txn_type').value;
+        const payload = {
+            nameOrig:       document.getElementById('nameOrig').value.trim(),
+            nameDest:       document.getElementById('nameDest').value.trim(),
+            amount:         parseFloat(document.getElementById('amount').value),
+            recency_hours:  parseFloat(document.getElementById('recency_hours').value),
+            txn_count_24h:  parseInt(document.getElementById('txn_count_24h').value),
+            is_dest_new:    parseInt(document.getElementById('is_dest_new').value),
+            hours_day:      parseInt(document.getElementById('hours_day').value),
+            oldbalanceOrg:  parseFloat(document.getElementById('oldbalanceOrg').value),
+            newbalanceOrig: parseFloat(document.getElementById('newbalanceOrig').value),
+            oldbalanceDest: parseFloat(document.getElementById('oldbalanceDest').value),
+            newbalanceDest: parseFloat(document.getElementById('newbalanceDest').value),
+            type_CASH_IN:   t==='CASH_IN'  ?1:0,
+            type_CASH_OUT:  t==='CASH_OUT'  ?1:0,
+            type_DEBIT:     t==='DEBIT'     ?1:0,
+            type_PAYMENT:   t==='PAYMENT'   ?1:0,
+            type_TRANSFER:  t==='TRANSFER'  ?1:0,
+        };
+
+        try {
+            const res = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const r = await res.json();
+            showResults(buildResults(r, payload));
+        } catch (err) {
+            showResults(`
+                <div class="info-card" style="border-color:var(--red-bd)">
+                    <div class="card-body">
+                        <div class="row"><span class="row-key">Error</span><span class="row-val bad">Connection failed</span></div>
+                        <div style="padding:12px 16px;font-size:12px;color:var(--t3)">Make sure the server is running.<br>${err}</div>
+                    </div>
+                </div>`);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Run Analysis';
+        }
+    }
+
+    /* ── Build results HTML ── */
+    const pct = v => (v * 100).toFixed(2) + '%';
+    const fmtAmt = v => '$' + parseFloat(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function riskPill(level) {
+        const cls = level==='HIGH' ? 'pill-red' : level==='MEDIUM' ? 'pill-amber' : 'pill-green';
+        return `<span class="pill ${cls}">${level}</span>`;
+    }
+
+    function buildResults(r, p) {
+        const isFraud = r.is_fraud;
+        const inRing  = r.in_ring;
+        const v       = isFraud ? 'fraud' : 'legit';
+
+        /* Verdict */
+        const verdict = `
+        <div class="verdict ${v} r1">
+            <div class="verdict-icon">${isFraud ? '✕' : '✓'}</div>
+            <div class="verdict-text">
+                <div class="verdict-label">${isFraud ? 'Fraud Detected' : 'Legitimate Transaction'}</div>
+                <div class="verdict-sub">${fmtAmt(p.amount)} · ${document.getElementById('txn_type').value}</div>
+                <div class="pill-row">
+                    <span class="pill ${isFraud ? 'pill-red':'pill-green'}">${r.decision}</span>
+                    ${riskPill(r.final_risk_level)}
+                    ${inRing ? `<span class="pill pill-orange">⚠ ${r.ring_pattern}</span>` : `<span class="pill pill-slate">No Ring</span>`}
                 </div>
             </div>
-        </div>
+        </div>`;
 
-        <!-- RIGHT: Form -->
-        <div class="right-panel">
-            <div class="form-title">Transaction Details</div>
-            <div class="form-desc">Optional account IDs enable ring / layering lookup.</div>
+        /* Scores */
+        const scores = `
+        <div class="score-grid r2">
+            <div class="score-card">
+                <div class="score-label">Fraud Score</div>
+                <div class="score-val col-red">${pct(r.fraud_probability)}</div>
+                <div class="bar-track"><div class="bar-fill bar-red" style="width:${Math.round(r.fraud_probability*100)}%"></div></div>
+                <div class="score-src">XGBoost model</div>
+            </div>
+            <div class="score-card">
+                <div class="score-label">Ring Score</div>
+                <div class="score-val col-orange">${pct(r.ring_score)}</div>
+                <div class="bar-track"><div class="bar-fill bar-orange" style="width:${Math.round(r.ring_score*100)}%"></div></div>
+                <div class="score-src">Graph analysis</div>
+            </div>
+            <div class="score-card">
+                <div class="score-label">Final Risk</div>
+                <div class="score-val col-indigo">${pct(r.final_risk_score)}</div>
+                <div class="bar-track"><div class="bar-fill bar-indigo" style="width:${Math.round(r.final_risk_score*100)}%"></div></div>
+                <div class="score-src">Combined signal</div>
+            </div>
+        </div>`;
 
-            <form id="fraudForm">
-
-                <div class="form-section-label">Account IDs (optional)</div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Sender Account (nameOrig)</label>
-                        <input type="text" id="nameOrig" placeholder="e.g. C1259602302">
-                    </div>
-                    <div class="form-group">
-                        <label>Receiver Account (nameDest)</label>
-                        <input type="text" id="nameDest" placeholder="e.g. M938657528">
-                    </div>
+        /* Ring card */
+        const srWarn  = r.sender_ring_score   > 0 ? 'warn' : '';
+        const rrWarn  = r.receiver_ring_score > 0 ? 'warn' : '';
+        const ring = `
+        <div class="info-card ${inRing ? 'ring-active' : ''} r3">
+            <div class="card-header">
+                <span>${inRing ? '🔗' : '🔒'}</span>
+                <span class="card-header-title">Network Analysis</span>
+                ${inRing ? `<span class="pill pill-orange" style="font-size:10px">${r.ring_pattern}</span>` : `<span class="pill pill-slate" style="font-size:10px">Clean</span>`}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <span class="row-key">Sender ring score</span>
+                    <span class="row-val ${srWarn}">${pct(r.sender_ring_score)}</span>
                 </div>
-
-                <div class="form-section-label">Transaction</div>
-                <div class="form-grid three">
-                    <div class="form-group">
-                        <label>Amount ($)</label>
-                        <input type="number" id="amount" step="0.01" placeholder="0.00" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Type</label>
-                        <select id="txn_type" required>
-                            <option value="">Select</option>
-                            <option value="CASH_IN">Cash In</option>
-                            <option value="CASH_OUT">Cash Out</option>
-                            <option value="DEBIT">Debit</option>
-                            <option value="PAYMENT">Payment</option>
-                            <option value="TRANSFER">Transfer</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Hour of Day (0–23)</label>
-                        <input type="number" id="hours_day" min="0" max="23" placeholder="14" required>
-                    </div>
+                <div class="row">
+                    <span class="row-key">Receiver ring score</span>
+                    <span class="row-val ${rrWarn}">${pct(r.receiver_ring_score)}</span>
                 </div>
-
-                <div class="form-section-label">Origin Account Balances</div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Balance Before</label>
-                        <input type="number" id="oldbalanceOrg" step="0.01" placeholder="0.00" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Balance After</label>
-                        <input type="number" id="newbalanceOrig" step="0.01" placeholder="0.00" required>
-                    </div>
+                <div class="row">
+                    <span class="row-key">Pattern</span>
+                    <span class="row-val ${inRing ? 'warn' : 'ok'}">${r.ring_pattern}</span>
                 </div>
+                ${inRing ? `<div class="row"><span class="row-key">Detail</span><span class="row-val" style="color:var(--t2);font-size:12px;text-align:right;max-width:55%">${r.ring_detail}</span></div>` : ''}
+            </div>
+        </div>`;
 
-                <div class="form-section-label">Destination Account Balances</div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Balance Before</label>
-                        <input type="number" id="oldbalanceDest" step="0.01" placeholder="0.00" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Balance After</label>
-                        <input type="number" id="newbalanceDest" step="0.01" placeholder="0.00" required>
-                    </div>
-                </div>
+        /* Summary */
+        const summary = `
+        <div class="info-card r4">
+            <div class="card-header">
+                <span>🤖</span>
+                <span class="card-header-title">AI Summary</span>
+                <span class="pill pill-indigo" style="font-size:10px">Groq</span>
+            </div>
+            <p class="summary-text">${r.summary}</p>
+        </div>`;
 
-                <div class="form-section-label">Behavioural Signals</div>
-                <div class="form-grid three">
-                    <div class="form-group">
-                        <label>Hours Since Last Txn</label>
-                        <input type="number" id="recency_hours" step="0.1" placeholder="24.0" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Txns in Last 24h</label>
-                        <input type="number" id="txn_count_24h" placeholder="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label>New Destination?</label>
-                        <select id="is_dest_new" required>
-                            <option value="0">No</option>
-                            <option value="1">Yes</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" class="predict-btn" id="predictBtn">
-                    Analyse Transaction
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        const API_URL = '/predict';
-
-        document.getElementById('fraudForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const btn = document.getElementById('predictBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="btn-spinner"></span>Analysing…';
-            document.getElementById('resultContainer').innerHTML =
-                '<div class="placeholder"><div class="placeholder-icon" style="font-size:36px">⏳</div>Running model + graph analysis…</div>';
-
-            const txn_type = document.getElementById('txn_type').value;
-
-            const payload = {
-                nameOrig:       document.getElementById('nameOrig').value.trim(),
-                nameDest:       document.getElementById('nameDest').value.trim(),
-                amount:         parseFloat(document.getElementById('amount').value),
-                recency_hours:  parseFloat(document.getElementById('recency_hours').value),
-                txn_count_24h:  parseInt(document.getElementById('txn_count_24h').value),
-                is_dest_new:    parseInt(document.getElementById('is_dest_new').value),
-                hours_day:      parseInt(document.getElementById('hours_day').value),
-                oldbalanceOrg:  parseFloat(document.getElementById('oldbalanceOrg').value),
-                newbalanceOrig: parseFloat(document.getElementById('newbalanceOrig').value),
-                oldbalanceDest: parseFloat(document.getElementById('oldbalanceDest').value),
-                newbalanceDest: parseFloat(document.getElementById('newbalanceDest').value),
-                type_CASH_IN:   txn_type === 'CASH_IN'  ? 1 : 0,
-                type_CASH_OUT:  txn_type === 'CASH_OUT'  ? 1 : 0,
-                type_DEBIT:     txn_type === 'DEBIT'     ? 1 : 0,
-                type_PAYMENT:   txn_type === 'PAYMENT'   ? 1 : 0,
-                type_TRANSFER:  txn_type === 'TRANSFER'  ? 1 : 0,
-            };
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
-                const result = await response.json();
-                displayResults(result);
-            } catch (err) {
-                document.getElementById('resultContainer').innerHTML =
-                    `<div class="verdict-card"><div class="verdict-label" style="color:#e63946">Connection Error</div>
-                     <div class="verdict-subtitle">Make sure the server is running.<br><small>${err}</small></div></div>`;
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = 'Analyse Transaction';
-            }
-        });
-
-        function riskBadgeClass(level) {
-            return level === 'HIGH' ? 'badge-high' : level === 'MEDIUM' ? 'badge-medium' : 'badge-low';
-        }
-
-        function pct(val) { return (val * 100).toFixed(2) + '%'; }
-
-        function barHTML(pctVal, barClass) {
-            return `<div class="score-bar-wrap">
-                        <div class="score-bar-track">
-                            <div class="score-bar-fill ${barClass}" style="width:${Math.round(pctVal*100)}%"></div>
-                        </div>
-                    </div>`;
-        }
-
-        function displayResults(r) {
-            const isFraud     = r.is_fraud;
-            const inRing      = r.in_ring;
-            const cardClass   = isFraud ? 'fraud' : 'legit';
-            const emoji       = isFraud ? '🚨' : '✅';
-
-            // ── Verdict card ──
-            const verdictHTML = `
-            <div class="verdict-card ${cardClass} animate-in">
-                <span class="verdict-emoji">${emoji}</span>
-                <div class="verdict-label">${r.decision}</div>
-                <div class="verdict-subtitle">XGBoost · Ring Analysis · Combined Score</div>
-
-                <div class="scores-row">
-                    <div class="score-cell">
-                        <div class="sc-label">Fraud Score</div>
-                        <div class="sc-value fraud-col">${pct(r.fraud_probability)}</div>
-                        ${barHTML(r.fraud_probability, 'bar-fraud')}
-                    </div>
-                    <div class="score-cell">
-                        <div class="sc-label">Ring Score</div>
-                        <div class="sc-value ring-col">${pct(r.ring_score)}</div>
-                        ${barHTML(r.ring_score, 'bar-ring')}
-                    </div>
-                    <div class="score-cell">
-                        <div class="sc-label">Final Risk</div>
-                        <div class="sc-value final-col">${pct(r.final_risk_score)}</div>
-                        ${barHTML(r.final_risk_score, 'bar-final')}
-                    </div>
-                </div>
-
-                <div class="badges-row">
-                    <span class="badge ${riskBadgeClass(r.risk_level)}">
-                        Model: ${r.risk_level} RISK
-                    </span>
-                    <span class="badge ${riskBadgeClass(r.final_risk_level)}">
-                        Combined: ${r.final_risk_level} RISK
-                    </span>
-                    ${inRing
-                        ? `<span class="badge badge-ring">⚠ ${r.ring_pattern}</span>`
-                        : `<span class="badge badge-clean">✔ No Ring</span>`
-                    }
-                </div>
-            </div>`;
-
-            // ── Ring card ──
-            const ringHTML = `
-            <div class="ring-card ${inRing ? '' : 'clean'} animate-in" style="animation-delay:0.05s">
-                <div class="ring-card-title">
-                    ${inRing ? '🔗' : '🔒'} Network / Ring Analysis
-                </div>
-                <div class="ring-rows">
-                    <div class="ring-row">
-                        <span class="rr-key">Sender ring score</span>
-                        <span class="rr-val ${r.sender_ring_score > 0 ? 'warn' : ''}">${pct(r.sender_ring_score)}</span>
-                    </div>
-                    <div class="ring-row">
-                        <span class="rr-key">Receiver ring score</span>
-                        <span class="rr-val ${r.receiver_ring_score > 0 ? 'warn' : ''}">${pct(r.receiver_ring_score)}</span>
-                    </div>
-                    <div class="ring-row">
-                        <span class="rr-key">Pattern detected</span>
-                        <span class="rr-val ${inRing ? 'warn' : ''}">${r.ring_pattern}</span>
-                    </div>
-                    ${inRing ? `<div class="ring-row">
-                        <span class="rr-key">Detail</span>
-                        <span class="rr-val warn" style="font-size:12px;text-align:right;max-width:58%">${r.ring_detail}</span>
-                    </div>` : ''}
-                </div>
-            </div>`;
-
-            // ── Summary card ──
-            const summaryHTML = `
-            <div class="summary-card animate-in" style="animation-delay:0.1s">
-                <div class="summary-card-title">🤖 AI Analysis</div>
-                <div class="summary-text">${r.summary}</div>
-            </div>`;
-
-            document.getElementById('resultContainer').innerHTML =
-                verdictHTML + ringHTML + summaryHTML;
-        }
-    </script>
+        return verdict + scores + ring + summary;
+    }
+</script>
 </body>
 </html>
