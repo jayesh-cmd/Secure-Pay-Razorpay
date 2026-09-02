@@ -81,27 +81,30 @@ def _find_fanin_hubs(df: pd.DataFrame, threshold: int) -> pd.DataFrame:
     return hubs[["account_id", "unique_senders", "fanin_score"]]
 
 
-def _find_layering_chains(df: pd.DataFrame, min_len: int) -> dict[str, float]:
+def _find_layering_chains(
+    df: pd.DataFrame, min_len: int
+) -> tuple[dict[str, float], dict[str, list]]:
     """
     Detect relay chains in TRANSFER/CASH_OUT transactions.
     A chain is a path A0 → A1 → A2 → ... where each Ai both receives and
     then sends money onward (a classic smurfing / layering pattern).
 
-    Returns: {account_id: chain_depth_score}  (score in [0, 1])
+    Returns:
+        scores      — {account_id: chain_depth_score}  (score in [0, 1])
+        chain_paths — {account_id: ordered_chain_list}  (the full path each
+                       account belongs to, already computed by dag_longest_path)
     """
     # Only high-risk transaction types
     mask   = (df["type_TRANSFER"] == 1) | (df["type_CASH_OUT"] == 1)
     df_sub = df[mask][["nameOrig", "nameDest", "amount"]].copy()
 
-    senders   = set(df_sub["nameOrig"])
-    receivers = set(df_sub["nameDest"])
+    senders     = set(df_sub["nameOrig"])
+    receivers   = set(df_sub["nameDest"])
     relay_nodes = senders & receivers          # accounts that both send & receive
 
     if not relay_nodes:
-        return {}
+        return {}, {}
 
-    # Build adjacency for relay-only nodes
-    # BFS / DFS to find the longest chain each relay node is part of
     # Build a simple DiGraph restricted to relay nodes + their neighbours
     G_relay = nx.DiGraph()
     for _, row in df_sub.iterrows():
@@ -110,32 +113,35 @@ def _find_layering_chains(df: pd.DataFrame, min_len: int) -> dict[str, float]:
             G_relay.add_edge(o, d, weight=row["amount"])
 
     # Find weakly connected components, then longest path within each
-    chain_depth: dict[str, int] = defaultdict(int)
+    chain_depth: dict[str, int]  = defaultdict(int)
+    chain_paths: dict[str, list] = {}          # ← account_id → full ordered path
+
     for component in nx.weakly_connected_components(G_relay):
         sub = G_relay.subgraph(component)
         if sub.number_of_nodes() < min_len:
             continue
-        # dag_longest_path only works on DAGs; most chains are DAGs
         try:
-            path = nx.dag_longest_path(sub)
+            path  = nx.dag_longest_path(sub)   # ordered list of account IDs
             depth = len(path)
             if depth >= min_len:
                 for node in path:
-                    chain_depth[node] = max(chain_depth[node], depth)
+                    if depth > chain_depth[node]:  # keep longest chain per node
+                        chain_depth[node]  = depth
+                        chain_paths[node]  = list(path)   # store — don't discard
         except nx.NetworkXUnfeasible:
             # Has a cycle — already handled by cycle detector
             pass
 
     if not chain_depth:
-        return {}
+        return {}, {}
 
-    # Absolute scale: 3-hop chain → ~0.13, 6-hop → 0.5, 10-hop → 1.0
-    # This avoids the collapse-to-1.0 problem when all chains have the same depth.
+    # Absolute scale: 3-hop → ~0.13, 6-hop → 0.5, 10-hop → 1.0
     span = CHAIN_SCORE_CAP - CHAIN_MIN_LEN
-    return {
+    scores = {
         acct: min(1.0, (depth - CHAIN_MIN_LEN + 1) / span)
         for acct, depth in chain_depth.items()
     }
+    return scores, chain_paths
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -163,7 +169,8 @@ def detect_rings(df: pd.DataFrame) -> pd.DataFrame:
         raise ValueError(f"Input DataFrame is missing columns: {missing}")
 
     scores: dict[str, dict] = defaultdict(
-        lambda: {"cycle": 0.0, "fanin": 0.0, "layering": 0.0, "patterns": set(), "detail": []}
+        lambda: {"cycle": 0.0, "fanin": 0.0, "layering": 0.0,
+                 "patterns": set(), "detail": [], "ring_chain": []}
     )
 
     # ── 1. CYCLE detection ──────────────────────────────────────────────────
@@ -204,11 +211,12 @@ def detect_rings(df: pd.DataFrame) -> pd.DataFrame:
 
     # ── 3. LAYERING / CHAIN detection ───────────────────────────────────────
     print("  [3/3] Detecting layering chains (relay nodes in TRANSFER/CASH_OUT)...")
-    layer_scores = _find_layering_chains(df, min_len=CHAIN_MIN_LEN)
+    layer_scores, chain_paths = _find_layering_chains(df, min_len=CHAIN_MIN_LEN)
     print(f"        Layering accounts flagged (chain ≥{CHAIN_MIN_LEN} hops): {len(layer_scores)}")
 
     for acct, lscore in layer_scores.items():
-        scores[acct]["layering"] = lscore
+        scores[acct]["layering"]   = lscore
+        scores[acct]["ring_chain"] = chain_paths.get(acct, [])   # ordered path, already computed
         scores[acct]["patterns"].add("LAYERING")
         scores[acct]["detail"].append(f"Layering chain participant (score={lscore:.2f})")
 
@@ -233,6 +241,7 @@ def detect_rings(df: pd.DataFrame) -> pd.DataFrame:
             "ring_score": round(ring_score, 4),
             "pattern":    patterns,
             "detail":     detail,
+            "ring_chain": s.get("ring_chain", []),
         })
 
     result = (
