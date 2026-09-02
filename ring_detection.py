@@ -33,6 +33,7 @@ from collections import defaultdict
 ROOT             = Path(__file__).resolve().parent
 FANIN_THRESHOLD  = 3        # min unique senders → flag as fan-in hub
 CHAIN_MIN_LEN    = 3        # min hops for a layering chain to be flagged
+CHAIN_SCORE_CAP  = 10       # chains of this many hops or more score 1.0 (absolute scale)
 CYCLE_MAX_LEN    = 8        # max cycle length to search (perf guard)
 
 
@@ -128,8 +129,13 @@ def _find_layering_chains(df: pd.DataFrame, min_len: int) -> dict[str, float]:
     if not chain_depth:
         return {}
 
-    max_depth = max(chain_depth.values())
-    return {acct: depth / max_depth for acct, depth in chain_depth.items()}
+    # Absolute scale: 3-hop chain → ~0.13, 6-hop → 0.5, 10-hop → 1.0
+    # This avoids the collapse-to-1.0 problem when all chains have the same depth.
+    span = CHAIN_SCORE_CAP - CHAIN_MIN_LEN
+    return {
+        acct: min(1.0, (depth - CHAIN_MIN_LEN + 1) / span)
+        for acct, depth in chain_depth.items()
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
