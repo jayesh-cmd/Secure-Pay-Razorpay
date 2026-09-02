@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bodoni+Moda:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F5F1E8 0%, #E8DCC4 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #383838;
+            color: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 84px);
+            gap: 0;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: #FAF8F3;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid #D4C5A9;
+        }
+
+        .right-panel {
+            flex: 1;
+            background: #F5F1E8;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .result-container {
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+        }
+
+        .result-box {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .fraud-indicator {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #383838;
+        }
+
+        .result-subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .probability {
+            font-size: 52px;
+            font-weight: 700;
+            margin: 25px 0;
+        }
+
+        .fraud { color: #DC3545; }
+        .legit { color: #28A745; }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 12px;
+        }
+
+        .risk-high { background: #FFE5E8; color: #DC3545; }
+        .risk-medium { background: #FFF3CD; color: #856404; }
+        .risk-low { background: #D4EDDA; color: #155724; }
+
+        .summary-box {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+
+        .summary-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #383838;
+            margin-bottom: 15px;
+        }
+
+        .summary-text {
+            font-family: 'Bodoni Moda', serif;
+            font-size: 17px;
+            line-height: 1.7;
+            color: #444;
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #383838;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
+            border: 1px solid #D4C5A9;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #383838;
+        }
+
+        .predict-btn {
+            width: 100%;
+            padding: 14px;
+            background: #383838;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .predict-btn:hover {
+            background: #2a2a2a;
+        }
+
+        .predict-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .placeholder {
+            color: #999;
+            font-size: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Transaction Fraud Detection System</h1>
+    </div>
+
+    <div class="container">
+        <!-- LEFT PANEL: Results -->
+        <div class="left-panel">
+            <div class="result-container" id="resultContainer">
+                <div class="placeholder">Enter transaction details and click Predict</div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Form -->
+        <div class="right-panel">
+            <div class="form-title">Transaction Details</div>
+            
+            <form id="fraudForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Amount ($)</label>
+                        <input type="number" id="amount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hours Since Last Transaction</label>
+                        <input type="number" id="recency_hours" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Transactions in Last 24h</label>
+                        <input type="number" id="txn_count_24h" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Destination?</label>
+                        <select id="is_dest_new" required>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hour of Day (0-23)</label>
+                        <input type="number" id="hours_day" min="0" max="23" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Old Balance (Origin)</label>
+                        <input type="number" id="oldbalanceOrg" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Balance (Origin)</label>
+                        <input type="number" id="newbalanceOrig" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Old Balance (Destination)</label>
+                        <input type="number" id="oldbalanceDest" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Balance (Destination)</label>
+                        <input type="number" id="newbalanceDest" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Transaction Type</label>
+                        <select id="txn_type" required>
+                            <option value="">Select Type</option>
+                            <option value="CASH_IN">Cash In</option>
+                            <option value="CASH_OUT">Cash Out</option>
+                            <option value="DEBIT">Debit</option>
+                            <option value="PAYMENT">Payment</option>
+                            <option value="TRANSFER">Transfer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="predict-btn" id="predictBtn">Predict Fraud Risk</button>
+                <div class="loading" id="loading">Analyzing transaction...</div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/predict';
+
+        document.getElementById('fraudForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get form values
+            const amount = parseFloat(document.getElementById('amount').value);
+            const recency_hours = parseFloat(document.getElementById('recency_hours').value);
+            const txn_count_24h = parseInt(document.getElementById('txn_count_24h').value);
+            const is_dest_new = parseInt(document.getElementById('is_dest_new').value);
+            const hours_day = parseInt(document.getElementById('hours_day').value);
+            const oldbalanceOrg = parseFloat(document.getElementById('oldbalanceOrg').value);
+            const newbalanceOrig = parseFloat(document.getElementById('newbalanceOrig').value);
+            const oldbalanceDest = parseFloat(document.getElementById('oldbalanceDest').value);
+            const newbalanceDest = parseFloat(document.getElementById('newbalanceDest').value);
+            const txn_type = document.getElementById('txn_type').value;
+
+            // Convert transaction type to binary flags
+            const type_CASH_IN = txn_type === 'CASH_IN' ? 1 : 0;
+            const type_CASH_OUT = txn_type === 'CASH_OUT' ? 1 : 0;
+            const type_DEBIT = txn_type === 'DEBIT' ? 1 : 0;
+            const type_PAYMENT = txn_type === 'PAYMENT' ? 1 : 0;
+            const type_TRANSFER = txn_type === 'TRANSFER' ? 1 : 0;
+
+            // Prepare request
+            const payload = {
+                amount,
+                recency_hours,
+                txn_count_24h,
+                is_dest_new,
+                hours_day,
+                oldbalanceOrg,
+                newbalanceOrig,
+                oldbalanceDest,
+                newbalanceDest,
+                type_CASH_IN,
+                type_CASH_OUT,
+                type_DEBIT,
+                type_PAYMENT,
+                type_TRANSFER
+            };
+
+            // Show loading
+            document.getElementById('predictBtn').disabled = true;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultContainer').innerHTML = '<div class="placeholder">Analyzing...</div>';
+
+            try {
+                // Call API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                // Display results
+                displayResults(result);
+
+            } catch (error) {
+                document.getElementById('resultContainer').innerHTML = 
+                    '<div class="result-box"><div class="result-title">Error</div><div class="summary-text">Failed to connect to API. Make sure the server is running.</div></div>';
+            } finally {
+                document.getElementById('predictBtn').disabled = false;
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+
+        function displayResults(result) {
+            const isFraud = result.is_fraud;
+            const probability = (result.fraud_probability * 100).toFixed(2);
+            const riskLevel = result.risk_level;
+            const summary = result.summary;
+
+            const riskClass = riskLevel === 'HIGH' ? 'risk-high' : 
+                             riskLevel === 'MEDIUM' ? 'risk-medium' : 'risk-low';
+
+            const html = `
+                <div class="result-box">
+                    <div class="fraud-indicator">${isFraud ? '❌' : '✅'}</div>
+                    <div class="result-title">${result.decision}</div>
+                    <div class="result-subtitle">Fraud Detection Analysis</div>
+                    <div class="probability ${isFraud ? 'fraud' : 'legit'}">${probability}%</div>
+                    <div class="result-subtitle">Fraud Probability</div>
+                    <span class="risk-badge ${riskClass}">${riskLevel} RISK</span>
+                </div>
+                <div class="summary-box">
+                    <div class="summary-title">Analysis Summary</div>
+                    <div class="summary-text">${summary}</div>
+                </div>
+            `;
+
+            document.getElementById('resultContainer').innerHTML = html;
+        }
+    </script>
+</body>
+</html>

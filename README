@@ -1,0 +1,110 @@
+# 📋 **README.md**
+```
+# Dataset Link - https://www.kaggle.com/datasets/ealaxi/paysim1
+
+# Real-Time Fraud Detection System ( FinSecure AI )
+
+An end-to-end machine learning system for detecting fraudulent financial transactions in real-time with 99.98% accuracy.
+
+## Project Overview
+
+Built a production-ready fraud detection system that analyzes transaction patterns using machine learning to identify fraudulent activities with high precision and recall. The system includes a REST API and web interface for real-time fraud detection with AI-powered explanations.
+
+### Key Features
+- Real-time fraud detection with less than 100ms latency
+- 99.98% AUC-ROC accuracy
+- 80% precision at 99% recall
+- GPT-powered natural language explanations
+- Production-ready REST API
+- Interactive web interface
+
+## Performance Metrics
+
+| Metric | Score |
+|--------|-------|
+| AUC-ROC | 99.98% |
+| Precision | 80.34% |
+| Recall | 99.20% |
+| Training Data | 6.3M transactions |
+
+## Tech Stack
+
+- ML Framework: XGBoost
+- API: FastAPI
+- AI Explanations: OpenAI GPT-3.5
+- Data Processing: Pandas, NumPy
+- Deployment: Uvicorn
+
+## Quick Start
+
+### Installation
+
+1. Clone the repository
+
+2. Install dependencies
+```
+pip install -r requirements.txt
+```
+
+3. Set up environment variables
+```
+echo "OPENAI_API_KEY=your-openai-api-key-here" > .env
+```
+
+4. Run the API server
+```
+uvicorn api:app --reload
+```
+
+5. Access the application
+- Web Interface: http://127.0.0.1:8000/
+- API Documentation: http://127.0.0.1:8000/docs
+
+## How It Works
+
+### Data Pipeline
+- Processed 6.3M transaction records
+- Time-based train/validation/test split (70/15/15)
+- Engineered 15 behavioral features
+
+### Feature Engineering
+Key features include:
+- Balance Changes: oldbalanceOrg, newbalanceOrig (account draining detection)
+- Transaction Patterns: amount, log_amount, recency_hours
+- Behavioral Flags: is_dest_new, txn_count_24h
+- Transaction Type: Binary flags for TRANSFER, CASH_OUT, PAYMENT, etc.
+
+### Model Training
+- Algorithm: XGBoost Classifier
+- Handled severe class imbalance (0.13% fraud rate)
+- Optimized threshold tuning (0.5 to 0.8)
+
+### Deployment
+- REST API with FastAPI
+- Real-time scoring endpoint
+- GPT-powered explanations for fraud analysts
+
+## API Usage
+
+### Predict Fraud
+
+Endpoint: POST /predict
+
+## Key Insights
+
+1. Account Draining Pattern: Fraudsters typically drain accounts (high balance to zero balance)
+2. Transaction Type: TRANSFER and CASH_OUT are highest risk
+3. New Destinations: Transfers to unknown recipients are suspicious
+4. Rapid Activity: Multiple transactions in short time windows indicate fraud
+
+## Future Improvements
+
+- Add model monitoring and drift detection
+- Implement A/B testing framework
+- Add SHAP values for detailed explanations
+- Integrate with real-time transaction streams
+- Add user feedback loop for continuous learning
+
+## Author
+Jayesh Vishwakarma
+LINKEDIN - www.linkedin.com/in/cmd-jayesh
