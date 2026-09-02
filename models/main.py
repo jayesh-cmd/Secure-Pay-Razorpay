@@ -50,6 +50,7 @@ RING_LOOKUP: dict[str, dict] = {
         "ring_score": row["ring_score"],
         "pattern":    row["pattern"],
         "detail":     row["detail"],
+        "ring_chain": row["ring_chain"],
     }
     for _, row in _ring_df.iterrows()
 }
@@ -119,6 +120,7 @@ class PredictionResponse(BaseModel):
     ring_pattern: str
     ring_detail: str
     in_ring: bool
+    ring_chain: list[str]
     # Combined
     final_risk_score: float
     final_risk_level: str
@@ -170,6 +172,7 @@ def predict_fraud(transaction: Transaction):
 
     ring_pattern = ring_info.get("pattern", "NONE")
     ring_detail  = ring_info.get("detail",  "No ring pattern detected")
+    ring_chain   = ring_info.get("ring_chain", [])
     in_ring      = ring_score > 0
 
     # ── 3. Combined final_risk_score ──────────────────────────────────────────
@@ -267,6 +270,7 @@ Provide a 2-3 sentence professional summary explaining why this transaction is {
         "ring_score":           round(ring_score, 4),
         "ring_pattern":         ring_pattern,
         "ring_detail":          ring_detail,
+        "ring_chain":           ring_chain,
         "in_ring":              in_ring,
         "final_risk_score":     round(final_risk_score, 4),
         "final_risk_level":     final_risk_level,

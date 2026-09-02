@@ -176,7 +176,7 @@
         /* Preset row */
         .preset-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
             margin-bottom: 24px;
         }
@@ -193,8 +193,9 @@
             transition: filter .15s;
         }
         .preset:hover { filter: brightness(.96); }
-        .preset-fraud { background: var(--red-bg);   border-color: var(--red-bd);   color: var(--red);   }
-        .preset-legit { background: var(--green-bg); border-color: var(--green-bd); color: var(--green); }
+        .preset-fraud  { background: var(--red-bg);    border-color: var(--red-bd);    color: var(--red);    }
+        .preset-legit  { background: var(--green-bg);  border-color: var(--green-bd);  color: var(--green);  }
+        .preset-ring   { background: var(--orange-bg); border-color: var(--orange-bd); color: var(--orange); }
 
         /* Form card */
         .form-card {
@@ -451,8 +452,9 @@
 
         <!-- Presets -->
         <div class="preset-row">
-            <button class="preset preset-fraud" id="loadFraud" type="button">🚨 Load Fraud Sample</button>
-            <button class="preset preset-legit" id="loadLegit" type="button">✅ Load Legit Sample</button>
+            <button class="preset preset-fraud" id="loadFraud" type="button">Load Fraud Sample</button>
+            <button class="preset preset-legit" id="loadLegit" type="button">Load Legit Sample</button>
+            <button class="preset preset-ring"  id="loadRing"  type="button">Load Ring Sample</button>
         </div>
 
         <!-- Form -->
@@ -565,8 +567,9 @@
 <script>
     /* ── Presets ── */
     const PRESETS = {
-        fraud: { nameOrig:'C1503476614', nameDest:'C539633851', amount:181935.37, txn_type:'TRANSFER', hours_day:3, recency_hours:1000000, txn_count_24h:0, is_dest_new:'1', oldbalanceOrg:181935.37, newbalanceOrig:0, oldbalanceDest:0, newbalanceDest:0 },
-        legit: { nameOrig:'C423543548',  nameDest:'M1490931456', amount:4200,    txn_type:'PAYMENT',  hours_day:9, recency_hours:48,      txn_count_24h:0, is_dest_new:'0', oldbalanceOrg:18543,     newbalanceOrig:14343, oldbalanceDest:0, newbalanceDest:0 },
+        fraud: { nameOrig:'C1503476614', nameDest:'C539633851',  amount:181935.37, txn_type:'TRANSFER', hours_day:3,  recency_hours:1000000, txn_count_24h:0, is_dest_new:'1', oldbalanceOrg:181935.37, newbalanceOrig:0,     oldbalanceDest:0, newbalanceDest:0        },
+        legit: { nameOrig:'C423543548',  nameDest:'M1490931456', amount:4200,      txn_type:'PAYMENT',  hours_day:9,  recency_hours:48,      txn_count_24h:0, is_dest_new:'0', oldbalanceOrg:18543,     newbalanceOrig:14343, oldbalanceDest:0, newbalanceDest:0        },
+        ring:  { nameOrig:'C334722206',  nameDest:'C1097957850', amount:282536.77, txn_type:'TRANSFER', hours_day:14, recency_hours:2.5,     txn_count_24h:3, is_dest_new:'0', oldbalanceOrg:282536.77, newbalanceOrig:0,     oldbalanceDest:0, newbalanceDest:282536.77 },
     };
 
     function fill(p) {
@@ -578,6 +581,7 @@
     }
     document.getElementById('loadFraud').onclick = () => fill(PRESETS.fraud);
     document.getElementById('loadLegit').onclick = () => fill(PRESETS.legit);
+    document.getElementById('loadRing').onclick  = () => fill(PRESETS.ring);
 
     /* ── Show / hide views ── */
     function showForm() {
@@ -675,7 +679,7 @@
                 <div class="pill-row">
                     <span class="pill ${isFraud ? 'pill-red':'pill-green'}">${r.decision}</span>
                     ${riskPill(r.final_risk_level)}
-                    ${inRing ? `<span class="pill pill-orange">⚠ ${r.ring_pattern}</span>` : `<span class="pill pill-slate">No Ring</span>`}
+                    ${inRing ? `<span class="pill pill-orange">⚑ ${r.ring_pattern}</span>` : `<span class="pill pill-slate">No Ring</span>`}
                 </div>
             </div>
         </div>`;
@@ -703,13 +707,56 @@
             </div>
         </div>`;
 
+    /* ── Chain SVG ── */
+    function chainSVG(chain, nameOrig, nameDest) {
+        const R       = 13;
+        const PAD     = 16;
+        const MAX_W   = 560;
+        const n       = chain.length;
+        const spacing = n > 1 ? Math.min(62, (MAX_W - 2 * PAD - 2 * R) / (n - 1)) : 62;
+        const svgW    = n === 1 ? 2 * R + 2 * PAD : 2 * PAD + (n - 1) * spacing + 2 * R;
+        const svgH    = 66;
+        const cy      = 25;
+        const C_INDIGO = '#5147E5';
+        const C_ORANGE = '#EA580C';
+        const C_SLATE  = '#E2E8F0';
+        const C_SL_STR = '#94A3B8';
+        const cx = i => PAD + R + i * spacing;
+        const mid = 'arr' + Math.random().toString(36).slice(2);
+
+        let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}">
+<defs><marker id="${mid}" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+  <path d="M0,0 L0,6 L6,3z" fill="#CBD5E1"/></marker></defs>`;
+
+        for (let i = 0; i < n - 1; i++) {
+            const x1 = cx(i) + R + 2, x2 = cx(i + 1) - R - 4;
+            svg += `<line x1="${x1}" y1="${cy}" x2="${x2}" y2="${cy}" stroke="#CBD5E1" stroke-width="1.5" marker-end="url(#${mid})"/>`;
+        }
+        for (let i = 0; i < n; i++) {
+            const x    = cx(i);
+            const acct = chain[i];
+            const isO  = acct === nameOrig;
+            const isD  = acct === nameDest;
+            const fill   = isO ? C_INDIGO : isD ? C_ORANGE : C_SLATE;
+            const stroke = isO ? C_INDIGO : isD ? C_ORANGE : '#CBD5E1';
+            const tFill  = (isO || isD) ? '#FFFFFF' : '#64748B';
+            const label  = acct.length > 6 ? acct[0] + '\u2026' + acct.slice(-4) : acct;
+            svg += `<circle cx="${x}" cy="${cy}" r="${R}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+            svg += `<text x="${x}" y="${cy + 0.5}" text-anchor="middle" dominant-baseline="middle" fill="${tFill}" font-size="8.5" font-family="monospace" font-weight="700">${i + 1}</text>`;
+            svg += `<text x="${x}" y="${cy + R + 13}" text-anchor="middle" fill="${C_SL_STR}" font-size="9" font-family="monospace">${label}</text>`;
+        }
+        svg += '</svg>';
+        return svg;
+    }
+
         /* Ring card */
+
         const srWarn  = r.sender_ring_score   > 0 ? 'warn' : '';
         const rrWarn  = r.receiver_ring_score > 0 ? 'warn' : '';
+        const hasChain = inRing && Array.isArray(r.ring_chain) && r.ring_chain.length >= 2;
         const ring = `
         <div class="info-card ${inRing ? 'ring-active' : ''} r3">
             <div class="card-header">
-                <span>${inRing ? '🔗' : '🔒'}</span>
                 <span class="card-header-title">Network Analysis</span>
                 ${inRing ? `<span class="pill pill-orange" style="font-size:10px">${r.ring_pattern}</span>` : `<span class="pill pill-slate" style="font-size:10px">Clean</span>`}
             </div>
@@ -728,13 +775,28 @@
                 </div>
                 ${inRing ? `<div class="row"><span class="row-key">Detail</span><span class="row-val" style="color:var(--t2);font-size:12px;text-align:right;max-width:55%">${r.ring_detail}</span></div>` : ''}
             </div>
+            ${hasChain ? `
+            <div style="padding:14px 18px;border-top:1px solid var(--border)">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:12px">Layering Chain</div>
+                ${chainSVG(r.ring_chain, p.nameOrig, p.nameDest)}
+                <div style="display:flex;gap:14px;margin-top:10px">
+                    <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--t3)">
+                        <span style="width:8px;height:8px;border-radius:50%;background:var(--indigo);display:inline-block"></span>Sender
+                    </span>
+                    <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--t3)">
+                        <span style="width:8px;height:8px;border-radius:50%;background:var(--orange);display:inline-block"></span>Receiver
+                    </span>
+                    <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--t3)">
+                        <span style="width:8px;height:8px;border-radius:50%;background:#E2E8F0;border:1px solid #CBD5E1;display:inline-block"></span>Other
+                    </span>
+                </div>
+            </div>` : ''}
         </div>`;
 
         /* Summary */
         const summary = `
         <div class="info-card r4">
             <div class="card-header">
-                <span>🤖</span>
                 <span class="card-header-title">AI Summary</span>
                 <span class="pill pill-indigo" style="font-size:10px">Groq</span>
             </div>
