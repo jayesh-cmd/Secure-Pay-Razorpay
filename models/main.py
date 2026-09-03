@@ -62,6 +62,7 @@ llm = ChatGroq(
     model="groq/compound",
     temperature=0,
     groq_api_key=os.getenv("GROQ_API_KEY"),
+    request_timeout=20,
 )
 
 # ── Audit log (append-only, one JSON line per call) ───────────────────────────
@@ -172,7 +173,7 @@ def predict_fraud(transaction: Transaction):
 
     ring_pattern = ring_info.get("pattern", "NONE")
     ring_detail  = ring_info.get("detail",  "No ring pattern detected")
-    ring_chain   = ring_info.get("ring_chain", [])
+    ring_chain   = [str(x) for x in ring_info.get("ring_chain", [])]  # always plain list[str]
     in_ring      = ring_score > 0
 
     # ── 3. Combined final_risk_score ──────────────────────────────────────────
@@ -234,7 +235,7 @@ Provide a 2-3 sentence professional summary explaining why this transaction is {
 
     try:
         response = llm.invoke([
-            {"role": "system", "content": "You are a financial fraud detection expert."},
+            {"role": "system", "content": "You are a financial fraud detection expert. Be concise."},
             {"role": "user",   "content": prompt},
         ])
         summary = response.content.strip()
