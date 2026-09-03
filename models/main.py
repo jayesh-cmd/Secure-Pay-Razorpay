@@ -6,6 +6,7 @@ import joblib
 from fastapi.responses import FileResponse
 import pandas as pd
 import numpy as np
+import re
 from langchain_groq import ChatGroq
 import os
 import json
@@ -128,6 +129,10 @@ class PredictionResponse(BaseModel):
     # Explanation
     summary: str
 
+class ChatRequest(BaseModel):
+    message: str
+    context: dict
+
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 @app.get("/")
@@ -211,7 +216,7 @@ def predict_fraud(transaction: Transaction):
     prompt = f"""You are a fraud detection analyst. Analyze this transaction and provide a clear, professional summary.
 
 ANALYSIS RESULTS:
-- Fraud Probability (XGBoost): {fraud_prob*100:.2f}%
+- Fraud Probability (model): {fraud_prob*100:.2f}%
 - Ring Score (graph analysis): {ring_score:.4f}
 - Final Combined Risk Score: {final_risk_score*100:.2f}%
 - Decision: {"FRAUD DETECTED" if is_fraud else "LEGITIMATE TRANSACTION"}
@@ -231,7 +236,7 @@ TRANSACTION DETAILS:
 NETWORK ANALYSIS:
 {ring_context}
 
-Provide a 2-3 sentence professional summary explaining why this transaction is {"flagged as fraud" if is_fraud else "considered legitimate"}. Mention both the model score and any ring/layering patterns if present."""
+Provide a 2-3 sentence professional summary explaining why this transaction is {"flagged as fraud" if is_fraud else "considered legitimate"}. Mention both the model score and any ring/layering patterns if present. Write in plain text only — no asterisks, no bold, no markdown, no bullet points."""
 
     try:
         response = llm.invoke([
@@ -239,6 +244,9 @@ Provide a 2-3 sentence professional summary explaining why this transaction is {
             {"role": "user",   "content": prompt},
         ])
         summary = response.content.strip()
+        # Strip any markdown the model sneaks in
+        summary = re.sub(r'\*{1,2}(.+?)\*{1,2}', r'\1', summary)
+        summary = re.sub(r'`(.+?)`', r'\1', summary)
     except Exception as e:
         summary = f"Error generating summary: {str(e)}"
 
@@ -277,3 +285,57 @@ Provide a 2-3 sentence professional summary explaining why this transaction is {
         "final_risk_level":     final_risk_level,
         "summary":              summary,
     }
+
+
+@app.post("/chat")
+def chat(req: ChatRequest):
+    ctx = req.context
+    balance_drain = ctx.get('oldbalanceOrg', 0) > 0 and ctx.get('newbalanceOrig', 0) == 0
+    dest_passthru  = ctx.get('oldbalanceDest', 0) == 0 and ctx.get('newbalanceDest', 0) == 0
+    context_str = (
+        f"=== TRANSACTION BEING ANALYSED ===\n"
+        f"Type: {ctx.get('txn_type','?')}  |  Amount: ${ctx.get('amount',0):,.2f}\n"
+        f"Hour of day: {ctx.get('hours_day','?')}  |  Hours since last txn: {ctx.get('recency_hours','?')}  |  Txns in last 24h: {ctx.get('txn_count_24h','?')}\n"
+        f"New destination account: {'Yes' if ctx.get('is_dest_new') else 'No'}\n"
+        f"\n=== BALANCE ANALYSIS ===\n"
+        f"Sender balance before: ${ctx.get('oldbalanceOrg',0):,.2f}  ->  after: ${ctx.get('newbalanceOrig',0):,.2f}  (FULLY DRAINED: {balance_drain})\n"
+        f"Receiver balance before: ${ctx.get('oldbalanceDest',0):,.2f}  ->  after: ${ctx.get('newbalanceDest',0):,.2f}  (PASS-THROUGH / zero balance: {dest_passthru})\n"
+        f"\n=== SCORES ===\n"
+        f"Fraud Score (model): {ctx.get('fraud_probability',0)*100:.1f}%\n"
+        f"Sender ring score: {ctx.get('sender_ring_score',0)*100:.1f}%  |  Receiver ring score: {ctx.get('receiver_ring_score',0)*100:.1f}%\n"
+        f"Ring Score: {ctx.get('ring_score',0)*100:.1f}%  |  Ring Pattern: {ctx.get('ring_pattern','NONE')}\n"
+        f"Ring Detail: {ctx.get('ring_detail','No ring pattern detected')}\n"
+        f"Ring Chain: {ctx.get('ring_chain', [])}\n"
+        f"Final Risk Score: {ctx.get('final_risk_score',0)*100:.1f}%  |  Decision: {ctx.get('decision','?')}\n"
+        f"\n=== KEY FRAUD SIGNALS TO USE IN YOUR ANSWER ===\n"
+        f"- If balance_drain is True: the sender account was completely emptied — a classic fraud pattern\n"
+        f"- If dest_passthru is True: money arrived at destination but immediately disappeared — relay/pass-through account\n"
+        f"- If is_dest_new is Yes: first-time recipient, no prior relationship\n"
+        f"- If recency_hours is very large: account was dormant then suddenly made a large transfer\n"
+        f"- Ring pattern NONE means no graph ring was detected — the fraud score alone is driving the decision"
+    )
+
+    system = """You are a fraud detection assistant embedded in the SecurePay risk analysis tool.
+You ONLY answer questions about:
+- The specific transaction provided in the context
+- Fraud detection concepts: ring scores, layering chains, fan-in hubs, model scoring, final risk
+- How to interpret the scores shown
+
+STRICT RULES:
+- If the question is unrelated to this transaction or financial fraud, respond ONLY with: "I can only help with questions about this transaction or fraud detection."
+- Never discuss coding, weather, news, general topics, or anything outside fraud/finance.
+- Be concise — 2 to 4 sentences maximum.
+- Do not use filler phrases like 'Great question' or 'Certainly'.
+- Write in plain text only. No asterisks, no bold, no markdown formatting of any kind."""
+
+    try:
+        response = llm.invoke([
+            {"role": "system", "content": system + "\n\n" + context_str},
+            {"role": "user",   "content": req.message},
+        ])
+        text = response.content.strip()
+        text = re.sub(r'\*{1,2}(.+?)\*{1,2}', r'\1', text)
+        text = re.sub(r'`(.+?)`', r'\1', text)
+        return {"response": text}
+    except Exception as e:
+        return {"response": f"Error: {str(e)}"}
