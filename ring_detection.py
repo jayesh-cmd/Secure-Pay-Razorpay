@@ -31,10 +31,10 @@ from collections import defaultdict
 
 # ── constants ────────────────────────────────────────────────────────────────
 ROOT             = Path(__file__).resolve().parent
-FANIN_THRESHOLD  = 3        # min unique senders → flag as fan-in hub
-CHAIN_MIN_LEN    = 3        # min hops for a layering chain to be flagged
-CHAIN_SCORE_CAP  = 10       # chains of this many hops or more score 1.0 (absolute scale)
-CYCLE_MAX_LEN    = 8        # max cycle length to search (perf guard)
+FANIN_THRESHOLD  = 3
+CHAIN_MIN_LEN    = 3
+CHAIN_SCORE_CAP  = 10
+CYCLE_MAX_LEN    = 8
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -53,12 +53,10 @@ def _build_graph(df: pd.DataFrame) -> nx.DiGraph:
 
 def _find_cycles(G: nx.DiGraph, length_bound: int) -> list[list]:
     """Return all simple cycles up to length_bound."""
-    # Convert to simple DiGraph for cycle search (MultiDiGraph collapses fine)
     simple_G = nx.DiGraph(G)
     try:
         cycles = list(nx.simple_cycles(simple_G, length_bound=length_bound))
     except TypeError:
-        # networkx < 3.1 doesn't support length_bound — brute-force with filter
         cycles = [c for c in nx.simple_cycles(simple_G) if len(c) <= length_bound]
     return cycles
 
@@ -94,48 +92,43 @@ def _find_layering_chains(
         chain_paths — {account_id: ordered_chain_list}  (the full path each
                        account belongs to, already computed by dag_longest_path)
     """
-    # Only high-risk transaction types
     mask   = (df["type_TRANSFER"] == 1) | (df["type_CASH_OUT"] == 1)
     df_sub = df[mask][["nameOrig", "nameDest", "amount"]].copy()
 
     senders     = set(df_sub["nameOrig"])
     receivers   = set(df_sub["nameDest"])
-    relay_nodes = senders & receivers          # accounts that both send & receive
+    relay_nodes = senders & receivers
 
     if not relay_nodes:
         return {}, {}
 
-    # Build a simple DiGraph restricted to relay nodes + their neighbours
     G_relay = nx.DiGraph()
     for _, row in df_sub.iterrows():
         o, d = row["nameOrig"], row["nameDest"]
         if o in relay_nodes or d in relay_nodes:
             G_relay.add_edge(o, d, weight=row["amount"])
 
-    # Find weakly connected components, then longest path within each
     chain_depth: dict[str, int]  = defaultdict(int)
-    chain_paths: dict[str, list] = {}          # ← account_id → full ordered path
+    chain_paths: dict[str, list] = {}
 
     for component in nx.weakly_connected_components(G_relay):
         sub = G_relay.subgraph(component)
         if sub.number_of_nodes() < min_len:
             continue
         try:
-            path  = nx.dag_longest_path(sub)   # ordered list of account IDs
+            path  = nx.dag_longest_path(sub)
             depth = len(path)
             if depth >= min_len:
                 for node in path:
-                    if depth > chain_depth[node]:  # keep longest chain per node
+                    if depth > chain_depth[node]:
                         chain_depth[node]  = depth
-                        chain_paths[node]  = list(path)   # store — don't discard
+                        chain_paths[node]  = list(path)
         except nx.NetworkXUnfeasible:
-            # Has a cycle — already handled by cycle detector
             pass
 
     if not chain_depth:
         return {}, {}
 
-    # Absolute scale: 3-hop → ~0.13, 6-hop → 0.5, 10-hop → 1.0
     span = CHAIN_SCORE_CAP - CHAIN_MIN_LEN
     scores = {
         acct: min(1.0, (depth - CHAIN_MIN_LEN + 1) / span)
@@ -182,7 +175,6 @@ def detect_rings(df: pd.DataFrame) -> pd.DataFrame:
     if cycles:
         max_cycle_len = max(len(c) for c in cycles)
         for cycle in cycles:
-            # Score: longer cycles = more sophisticated = higher score
             cycle_score = len(cycle) / max_cycle_len
             total_flow  = sum(
                 G[u][v][0].get("weight", 0)
@@ -216,14 +208,13 @@ def detect_rings(df: pd.DataFrame) -> pd.DataFrame:
 
     for acct, lscore in layer_scores.items():
         scores[acct]["layering"]   = lscore
-        scores[acct]["ring_chain"] = chain_paths.get(acct, [])   # ordered path, already computed
+        scores[acct]["ring_chain"] = chain_paths.get(acct, [])
         scores[acct]["patterns"].add("LAYERING")
         scores[acct]["detail"].append(f"Layering chain participant (score={lscore:.2f})")
 
     # ── Combine into final DataFrame ────────────────────────────────────────
     records = []
     for acct, s in scores.items():
-        # ring_score = weighted combination; cycles are rarest so weighted highest
         ring_score = min(1.0, (
             0.50 * s["cycle"] +
             0.30 * s["fanin"] +

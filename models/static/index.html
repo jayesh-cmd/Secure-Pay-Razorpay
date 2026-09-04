@@ -50,7 +50,6 @@
             min-height: 100vh;
         }
 
-        /* ── Topbar ── */
         .topbar {
             height: 52px;
             background: var(--surface);
@@ -135,7 +134,6 @@
         }
         .docs-btn:hover { border-color: #94A3B8; color: var(--t1); }
 
-        /* ── Page ── */
         .page {
             min-height: calc(100vh - 52px);
             display: flex;
@@ -144,7 +142,6 @@
             padding: 40px 20px 60px;
         }
 
-        /* ── Views ── */
         .view {
             width: 100%;
             max-width: 640px;
@@ -159,7 +156,6 @@
             to   { opacity:1; transform:translateY(0); }
         }
 
-        /* ── Form view ── */
         .view-title {
             font-size: 22px;
             font-weight: 700;
@@ -274,7 +270,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── Results view ── */
         /* Verdict */
         .verdict {
             border-radius: var(--r-lg);
@@ -424,7 +419,6 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-        /* ── Chat Panel (right-side float) ── */
         .chat-backdrop {
             display: none; /* no backdrop — panel sits beside content */
         }
@@ -743,7 +737,6 @@
 </div><!-- /page -->
 
 <script>
-    /* ── Presets ── */
     const PRESETS = {
         fraud: { nameOrig:'C1503476614', nameDest:'C539633851',  amount:181935.37, txn_type:'TRANSFER', hours_day:3,  recency_hours:1000000, txn_count_24h:0, is_dest_new:'1', oldbalanceOrg:181935.37, newbalanceOrig:0,     oldbalanceDest:0, newbalanceDest:0        },
         legit: { nameOrig:'C423543548',  nameDest:'M1490931456', amount:4200,      txn_type:'PAYMENT',  hours_day:9,  recency_hours:48,      txn_count_24h:0, is_dest_new:'0', oldbalanceOrg:18543,     newbalanceOrig:14343, oldbalanceDest:0, newbalanceDest:0        },
@@ -761,7 +754,6 @@
     document.getElementById('loadLegit').onclick = () => fill(PRESETS.legit);
     document.getElementById('loadRing').onclick  = () => fill(PRESETS.ring);
 
-    /* ── Show / hide views ── */
     function showForm() {
         document.getElementById('resultsView').classList.add('hidden');
         const fv = document.getElementById('formView');
@@ -782,7 +774,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    /* ── Run analysis ── */
     async function runAnalysis() {
         const form = document.getElementById('txnForm');
         if (!form.checkValidity()) { form.reportValidity(); return; }
@@ -838,7 +829,6 @@
         }
     }
 
-    /* ── Build results HTML ── */
     const pct = v => (v * 100).toFixed(2) + '%';
     const fmtAmt = v => '$' + parseFloat(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -890,7 +880,6 @@
             </div>
         </div>`;
 
-    /* ── Chain SVG ── */
     function chainSVG(chain, nameOrig, nameDest) {
         const R       = 13;
         const PAD     = 16;
@@ -992,11 +981,9 @@
         return verdict + scores + ring + summary;
     }
 
-    /* ── Global state ── */
     let currentResult  = null;
     let currentPayload = null;
 
-    /* ── Chat: open / close ── */
     function openChat() {
         if (!currentResult) return;
         const r = currentResult, p = currentPayload;
@@ -1021,7 +1008,6 @@
         document.getElementById('chatBackdrop').classList.remove('open');
     }
 
-    /* ── Chat: send message ── */
     async function sendChat() {
         const input = document.getElementById('chatInput');
         const btn   = document.getElementById('chatSendBtn');
