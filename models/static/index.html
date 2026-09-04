@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,39 +9,45 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg:        #F6F8FA;
-            --surface:   #FFFFFF;
-            --border:    #E2E8F0;
+            --bg: #F6F8FA;
+            --surface: #FFFFFF;
+            --border: #E2E8F0;
 
-            --indigo:    #5147E5;
+            --indigo: #5147E5;
             --indigo-dk: #3e36c7;
             --indigo-lt: #EEF2FF;
 
-            --t1:  #0F172A;
-            --t2:  #475569;
-            --t3:  #94A3B8;
+            --t1: #0F172A;
+            --t2: #475569;
+            --t3: #94A3B8;
 
-            --red:       #DC2626;
-            --red-bg:    #FEF2F2;
-            --red-bd:    #FECACA;
+            --red: #DC2626;
+            --red-bg: #FEF2F2;
+            --red-bd: #FECACA;
 
-            --green:     #16A34A;
-            --green-bg:  #F0FDF4;
-            --green-bd:  #BBF7D0;
+            --green: #16A34A;
+            --green-bg: #F0FDF4;
+            --green-bd: #BBF7D0;
 
-            --amber:     #D97706;
-            --amber-bg:  #FFFBEB;
-            --amber-bd:  #FDE68A;
+            --amber: #D97706;
+            --amber-bg: #FFFBEB;
+            --amber-bd: #FDE68A;
 
-            --orange:    #EA580C;
+            --orange: #EA580C;
             --orange-bg: #FFF7ED;
             --orange-bd: #FDBA74;
 
-            --r:   8px;
+            --r: 8px;
             --r-lg: 12px;
         }
 
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -59,14 +66,17 @@
             padding: 0 24px;
             gap: 10px;
         }
+
         .brand {
             display: flex;
             align-items: center;
             gap: 8px;
             text-decoration: none;
         }
+
         .brand-mark {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             background: var(--indigo);
             border-radius: 7px;
             color: white;
@@ -75,12 +85,14 @@
             display: grid;
             place-items: center;
         }
+
         .brand-name {
             font-size: 14px;
             font-weight: 700;
             color: var(--t1);
             letter-spacing: -0.2px;
         }
+
         .live-pill {
             display: inline-flex;
             align-items: center;
@@ -93,13 +105,26 @@
             font-weight: 600;
             color: var(--green);
         }
+
         .live-dot {
-            width: 5px; height: 5px;
+            width: 5px;
+            height: 5px;
             background: var(--green);
             border-radius: 50%;
             animation: blink 2s infinite;
         }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .3
+            }
+        }
 
         .topbar-right {
             margin-left: auto;
@@ -107,6 +132,7 @@
             align-items: center;
             gap: 8px;
         }
+
         .back-btn {
             display: none;
             align-items: center;
@@ -121,7 +147,12 @@
             cursor: pointer;
             transition: border-color .15s, color .15s;
         }
-        .back-btn:hover { border-color: #94A3B8; color: var(--t1); }
+
+        .back-btn:hover {
+            border-color: #94A3B8;
+            color: var(--t1);
+        }
+
         .docs-btn {
             padding: 5px 12px;
             border: 1px solid var(--border);
@@ -132,7 +163,11 @@
             text-decoration: none;
             transition: border-color .15s;
         }
-        .docs-btn:hover { border-color: #94A3B8; color: var(--t1); }
+
+        .docs-btn:hover {
+            border-color: #94A3B8;
+            color: var(--t1);
+        }
 
         .page {
             min-height: calc(100vh - 52px);
@@ -147,13 +182,25 @@
             max-width: 640px;
             transition: opacity .35s ease, transform .35s ease;
         }
+
         .view.hidden {
             display: none;
         }
-        .view.fade-in  { animation: fadeUp .35s ease both; }
+
+        .view.fade-in {
+            animation: fadeUp .35s ease both;
+        }
+
         @keyframes fadeUp {
-            from { opacity:0; transform:translateY(14px); }
-            to   { opacity:1; transform:translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .view-title {
@@ -163,6 +210,7 @@
             color: var(--t1);
             margin-bottom: 4px;
         }
+
         .view-sub {
             font-size: 13px;
             color: var(--t3);
@@ -176,6 +224,7 @@
             gap: 8px;
             margin-bottom: 24px;
         }
+
         .preset {
             padding: 9px 14px;
             border-radius: var(--r);
@@ -188,10 +237,28 @@
             gap: 6px;
             transition: filter .15s;
         }
-        .preset:hover { filter: brightness(.96); }
-        .preset-fraud  { background: var(--red-bg);    border-color: var(--red-bd);    color: var(--red);    }
-        .preset-legit  { background: var(--green-bg);  border-color: var(--green-bd);  color: var(--green);  }
-        .preset-ring   { background: var(--orange-bg); border-color: var(--orange-bd); color: var(--orange); }
+
+        .preset:hover {
+            filter: brightness(.96);
+        }
+
+        .preset-fraud {
+            background: var(--red-bg);
+            border-color: var(--red-bd);
+            color: var(--red);
+        }
+
+        .preset-legit {
+            background: var(--green-bg);
+            border-color: var(--green-bd);
+            color: var(--green);
+        }
+
+        .preset-ring {
+            background: var(--orange-bg);
+            border-color: var(--orange-bd);
+            color: var(--orange);
+        }
 
         /* Form card */
         .form-card {
@@ -200,11 +267,15 @@
             border-radius: var(--r-lg);
             overflow: hidden;
         }
+
         .form-section {
             padding: 18px 20px;
             border-bottom: 1px solid var(--border);
         }
-        .form-section:last-child { border-bottom: none; }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
 
         .section-label {
             font-size: 10px;
@@ -215,13 +286,33 @@
             margin-bottom: 12px;
         }
 
-        .fgrid   { display: grid; gap: 10px; }
-        .fgrid-2 { grid-template-columns: 1fr 1fr; }
-        .fgrid-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .fgrid {
+            display: grid;
+            gap: 10px;
+        }
 
-        .fgroup { display: flex; flex-direction: column; gap: 4px; }
-        .fgroup label { font-size: 11px; font-weight: 500; color: var(--t2); }
-        .fgroup input, .fgroup select {
+        .fgrid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .fgrid-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .fgroup {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .fgroup label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--t2);
+        }
+
+        .fgroup input,
+        .fgroup select {
             padding: 8px 10px;
             border: 1px solid var(--border);
             border-radius: var(--r);
@@ -232,11 +323,16 @@
             transition: border-color .15s, box-shadow .15s;
             -webkit-appearance: none;
         }
-        .fgroup input::placeholder { color: var(--t3); }
-        .fgroup input:focus, .fgroup select:focus {
+
+        .fgroup input::placeholder {
+            color: var(--t3);
+        }
+
+        .fgroup input:focus,
+        .fgroup select:focus {
             outline: none;
             border-color: var(--indigo);
-            box-shadow: 0 0 0 3px rgba(81,71,229,.1);
+            box-shadow: 0 0 0 3px rgba(81, 71, 229, .1);
         }
 
         .submit-btn {
@@ -257,18 +353,36 @@
             transition: background .15s, transform .1s;
             margin-top: 20px;
         }
-        .submit-btn:hover { background: var(--indigo-dk); }
-        .submit-btn:active { transform: scale(.99); }
-        .submit-btn:disabled { background: var(--border); color: var(--t3); cursor: not-allowed; transform: none; }
+
+        .submit-btn:hover {
+            background: var(--indigo-dk);
+        }
+
+        .submit-btn:active {
+            transform: scale(.99);
+        }
+
+        .submit-btn:disabled {
+            background: var(--border);
+            color: var(--t3);
+            cursor: not-allowed;
+            transform: none;
+        }
 
         .spinner {
-            width: 14px; height: 14px;
-            border: 2px solid rgba(255,255,255,.3);
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, .3);
             border-top-color: #fff;
             border-radius: 50%;
             animation: spin .65s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* Verdict */
         .verdict {
@@ -280,11 +394,20 @@
             gap: 16px;
             margin-bottom: 12px;
         }
-        .verdict.fraud { background: var(--red-bg);   border-color: var(--red-bd);   }
-        .verdict.legit { background: var(--green-bg); border-color: var(--green-bd); }
+
+        .verdict.fraud {
+            background: var(--red-bg);
+            border-color: var(--red-bd);
+        }
+
+        .verdict.legit {
+            background: var(--green-bg);
+            border-color: var(--green-bd);
+        }
 
         .verdict-icon {
-            width: 42px; height: 42px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             display: grid;
             place-items: center;
@@ -293,20 +416,46 @@
             color: white;
             flex-shrink: 0;
         }
-        .verdict.fraud .verdict-icon { background: var(--red);   }
-        .verdict.legit .verdict-icon { background: var(--green); }
 
-        .verdict-text { flex: 1; }
+        .verdict.fraud .verdict-icon {
+            background: var(--red);
+        }
+
+        .verdict.legit .verdict-icon {
+            background: var(--green);
+        }
+
+        .verdict-text {
+            flex: 1;
+        }
+
         .verdict-label {
             font-size: 19px;
             font-weight: 700;
             letter-spacing: -.3px;
         }
-        .verdict.fraud .verdict-label { color: var(--red);   }
-        .verdict.legit .verdict-label { color: var(--green); }
-        .verdict-sub   { font-size: 12px; color: var(--t2); margin-top: 2px; }
 
-        .pill-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+        .verdict.fraud .verdict-label {
+            color: var(--red);
+        }
+
+        .verdict.legit .verdict-label {
+            color: var(--green);
+        }
+
+        .verdict-sub {
+            font-size: 12px;
+            color: var(--t2);
+            margin-top: 2px;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 9px;
+        }
+
         .pill {
             display: inline-flex;
             align-items: center;
@@ -317,12 +466,42 @@
             font-weight: 600;
             border: 1px solid;
         }
-        .pill-red    { background:var(--red-bg);    border-color:var(--red-bd);    color:var(--red);    }
-        .pill-green  { background:var(--green-bg);  border-color:var(--green-bd);  color:var(--green);  }
-        .pill-amber  { background:var(--amber-bg);  border-color:var(--amber-bd);  color:var(--amber);  }
-        .pill-orange { background:var(--orange-bg); border-color:var(--orange-bd); color:var(--orange); }
-        .pill-slate  { background:#F1F5F9;           border-color:var(--border);    color:var(--t2);     }
-        .pill-indigo { background:var(--indigo-lt); border-color:#C7D2FE;           color:var(--indigo); }
+
+        .pill-red {
+            background: var(--red-bg);
+            border-color: var(--red-bd);
+            color: var(--red);
+        }
+
+        .pill-green {
+            background: var(--green-bg);
+            border-color: var(--green-bd);
+            color: var(--green);
+        }
+
+        .pill-amber {
+            background: var(--amber-bg);
+            border-color: var(--amber-bd);
+            color: var(--amber);
+        }
+
+        .pill-orange {
+            background: var(--orange-bg);
+            border-color: var(--orange-bd);
+            color: var(--orange);
+        }
+
+        .pill-slate {
+            background: #F1F5F9;
+            border-color: var(--border);
+            color: var(--t2);
+        }
+
+        .pill-indigo {
+            background: var(--indigo-lt);
+            border-color: #C7D2FE;
+            color: var(--indigo);
+        }
 
         /* Score cards */
         .score-grid {
@@ -331,12 +510,14 @@
             gap: 8px;
             margin-bottom: 12px;
         }
+
         .score-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--r-lg);
             padding: 16px;
         }
+
         .score-label {
             font-size: 10px;
             font-weight: 700;
@@ -345,6 +526,7 @@
             color: var(--t3);
             margin-bottom: 8px;
         }
+
         .score-val {
             font-size: 26px;
             font-weight: 700;
@@ -353,17 +535,49 @@
             margin-bottom: 8px;
             line-height: 1;
         }
-        .col-red    { color: var(--red);    }
-        .col-orange { color: var(--orange); }
-        .col-indigo { color: var(--indigo); }
 
-        .bar-track { height: 3px; background: var(--bg); border-radius: 4px; overflow: hidden; }
-        .bar-fill  { height: 100%; border-radius: 4px; transition: width .7s cubic-bezier(.4,0,.2,1); }
-        .bar-red    { background: var(--red);    }
-        .bar-orange { background: var(--orange); }
-        .bar-indigo { background: var(--indigo); }
+        .col-red {
+            color: var(--red);
+        }
 
-        .score-src { font-size: 10px; color: var(--t3); margin-top: 5px; }
+        .col-orange {
+            color: var(--orange);
+        }
+
+        .col-indigo {
+            color: var(--indigo);
+        }
+
+        .bar-track {
+            height: 3px;
+            background: var(--bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width .7s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .bar-red {
+            background: var(--red);
+        }
+
+        .bar-orange {
+            background: var(--orange);
+        }
+
+        .bar-indigo {
+            background: var(--indigo);
+        }
+
+        .score-src {
+            font-size: 10px;
+            color: var(--t3);
+            margin-top: 5px;
+        }
 
         /* Info card */
         .info-card {
@@ -373,7 +587,10 @@
             overflow: hidden;
             margin-bottom: 12px;
         }
-        .info-card.ring-active { border-color: var(--orange-bd); }
+
+        .info-card.ring-active {
+            border-color: var(--orange-bd);
+        }
 
         .card-header {
             padding: 12px 16px;
@@ -382,9 +599,16 @@
             align-items: center;
             gap: 7px;
         }
-        .card-header-title { font-size: 13px; font-weight: 600; flex: 1; }
 
-        .card-body { padding: 4px 0; }
+        .card-header-title {
+            font-size: 13px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .card-body {
+            padding: 4px 0;
+        }
 
         .row {
             display: flex;
@@ -394,12 +618,32 @@
             border-bottom: 1px solid var(--border);
             font-size: 13px;
         }
-        .row:last-child { border-bottom: none; }
-        .row-key { color: var(--t2); font-weight: 500; }
-        .row-val { font-weight: 600; font-variant-numeric: tabular-nums; }
-        .row-val.ok   { color: var(--green);  }
-        .row-val.warn { color: var(--orange); }
-        .row-val.bad  { color: var(--red);    }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .row-key {
+            color: var(--t2);
+            font-weight: 500;
+        }
+
+        .row-val {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .row-val.ok {
+            color: var(--green);
+        }
+
+        .row-val.warn {
+            color: var(--orange);
+        }
+
+        .row-val.bad {
+            color: var(--red);
+        }
 
         /* Summary */
         .summary-text {
@@ -410,17 +654,35 @@
         }
 
         /* Animations for result cards */
-        .r1 { animation: fadeUp .3s ease both; }
-        .r2 { animation: fadeUp .3s .07s ease both; }
-        .r3 { animation: fadeUp .3s .14s ease both; }
-        .r4 { animation: fadeUp .3s .21s ease both; }
+        .r1 {
+            animation: fadeUp .3s ease both;
+        }
+
+        .r2 {
+            animation: fadeUp .3s .07s ease both;
+        }
+
+        .r3 {
+            animation: fadeUp .3s .14s ease both;
+        }
+
+        .r4 {
+            animation: fadeUp .3s .21s ease both;
+        }
 
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
 
         .chat-backdrop {
-            display: none; /* no backdrop — panel sits beside content */
+            display: none;
+            /* no backdrop — panel sits beside content */
         }
 
         .chat-drawer {
@@ -432,14 +694,17 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 14px;
-            box-shadow: 0 8px 32px rgba(15,23,42,.12);
-            transition: right .28s cubic-bezier(.4,0,.2,1);
+            box-shadow: 0 8px 32px rgba(15, 23, 42, .12);
+            transition: right .28s cubic-bezier(.4, 0, .2, 1);
             z-index: 200;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
-        .chat-drawer.open { right: 16px; }
+
+        .chat-drawer.open {
+            right: 16px;
+        }
 
         /* standalone open-chat button */
         .open-chat-btn {
@@ -460,6 +725,7 @@
             transition: background .15s, border-color .15s;
             letter-spacing: .01em;
         }
+
         .open-chat-btn:hover {
             background: var(--indigo-dk);
             border-color: var(--indigo-dk);
@@ -473,8 +739,10 @@
             gap: 10px;
             flex-shrink: 0;
         }
+
         .chat-hdr-mark {
-            width: 30px; height: 30px;
+            width: 30px;
+            height: 30px;
             background: var(--indigo-lt);
             border-radius: 8px;
             display: grid;
@@ -484,11 +752,26 @@
             font-weight: 700;
             flex-shrink: 0;
         }
-        .chat-hdr-info { flex: 1; }
-        .chat-hdr-title { font-size: 14px; font-weight: 700; color: var(--t1); }
-        .chat-hdr-sub   { font-size: 11px; color: var(--t3); margin-top: 1px; }
+
+        .chat-hdr-info {
+            flex: 1;
+        }
+
+        .chat-hdr-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--t1);
+        }
+
+        .chat-hdr-sub {
+            font-size: 11px;
+            color: var(--t3);
+            margin-top: 1px;
+        }
+
         .chat-close-btn {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             border: 1px solid var(--border);
             border-radius: 6px;
             background: none;
@@ -499,7 +782,10 @@
             place-items: center;
             transition: background .15s;
         }
-        .chat-close-btn:hover { background: var(--bg); }
+
+        .chat-close-btn:hover {
+            background: var(--bg);
+        }
 
         .chat-ctx {
             padding: 10px 18px;
@@ -510,8 +796,16 @@
             gap: 6px 16px;
             flex-shrink: 0;
         }
-        .chat-ctx-item { font-size: 11px; color: var(--t3); }
-        .chat-ctx-item strong { color: var(--t2); font-weight: 600; }
+
+        .chat-ctx-item {
+            font-size: 11px;
+            color: var(--t3);
+        }
+
+        .chat-ctx-item strong {
+            color: var(--t2);
+            font-weight: 600;
+        }
 
         .chat-msgs {
             flex: 1;
@@ -521,6 +815,7 @@
             flex-direction: column;
             gap: 10px;
         }
+
         .chat-empty {
             margin: auto;
             text-align: center;
@@ -528,6 +823,7 @@
             font-size: 13px;
             line-height: 1.7;
         }
+
         .msg {
             max-width: 88%;
             border-radius: 12px;
@@ -536,12 +832,14 @@
             line-height: 1.6;
             word-break: break-word;
         }
+
         .msg-user {
             background: var(--indigo);
             color: white;
             align-self: flex-end;
             border-bottom-right-radius: 3px;
         }
+
         .msg-bot {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -549,7 +847,11 @@
             align-self: flex-start;
             border-bottom-left-radius: 3px;
         }
-        .msg-typing { color: var(--t3); font-style: italic; }
+
+        .msg-typing {
+            color: var(--t3);
+            font-style: italic;
+        }
 
         .chat-foot {
             padding: 12px 16px;
@@ -558,6 +860,7 @@
             gap: 8px;
             flex-shrink: 0;
         }
+
         .chat-text-input {
             flex: 1;
             padding: 9px 12px;
@@ -574,13 +877,16 @@
             max-height: 120px;
             line-height: 1.5;
         }
+
         .chat-text-input:focus {
             outline: none;
             border-color: var(--indigo);
-            box-shadow: 0 0 0 3px rgba(81,71,229,.1);
+            box-shadow: 0 0 0 3px rgba(81, 71, 229, .1);
         }
+
         .chat-send-btn {
-            width: 38px; height: 38px;
+            width: 38px;
+            height: 38px;
             background: var(--indigo);
             color: white;
             border: none;
@@ -593,340 +899,350 @@
             flex-shrink: 0;
             line-height: 1;
         }
-        .chat-send-btn:hover    { background: var(--indigo-dk); }
-        .chat-send-btn:disabled { background: var(--border); cursor: not-allowed; }
+
+        .chat-send-btn:hover {
+            background: var(--indigo-dk);
+        }
+
+        .chat-send-btn:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+        }
     </style>
 </head>
+
 <body>
 
-<!-- Topbar -->
-<header class="topbar">
-    <a href="/" class="brand">
-        <div class="brand-mark">SP</div>
-        <span class="brand-name">SecurePay</span>
-    </a>
-    <span class="live-pill">
-        <span class="live-dot"></span>Live
-    </span>
-    <div class="topbar-right">
-        <button class="back-btn" id="backBtn" onclick="showForm()">← New Analysis</button>
-        <a href="/docs" target="_blank" class="docs-btn">API Docs ↗</a>
-    </div>
-</header>
-
-<!-- Page -->
-<div class="page">
-
-    <!-- ── FORM VIEW ── -->
-    <div class="view" id="formView">
-        <div class="view-title">Risk Analysis</div>
-        <div class="view-sub">Enter transaction details to run fraud and ring detection.</div>
-
-        <!-- Presets -->
-        <div class="preset-row">
-            <button class="preset preset-fraud" id="loadFraud" type="button">Load Fraud Sample</button>
-            <button class="preset preset-legit" id="loadLegit" type="button">Load Legit Sample</button>
-            <button class="preset preset-ring"  id="loadRing"  type="button">Load Ring Sample</button>
+    <!-- Topbar -->
+    <header class="topbar">
+        <a href="/" class="brand">
+            <div class="brand-mark">SP</div>
+            <span class="brand-name">SecurePay</span>
+        </a>
+        <span class="live-pill">
+            <span class="live-dot"></span>Live
+        </span>
+        <div class="topbar-right">
+            <button class="back-btn" id="backBtn" onclick="showForm()">← New Analysis</button>
+            <a href="/docs" target="_blank" class="docs-btn">API Docs ↗</a>
         </div>
+    </header>
 
-        <!-- Form -->
-        <form id="txnForm">
-            <div class="form-card">
+    <!-- Page -->
+    <div class="page">
 
-                <div class="form-section">
-                    <div class="section-label">Account IDs <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">(optional — enables ring lookup)</span></div>
-                    <div class="fgrid fgrid-2">
-                        <div class="fgroup">
-                            <label>Sender (nameOrig)</label>
-                            <input id="nameOrig" type="text" placeholder="e.g. C1503476614">
-                        </div>
-                        <div class="fgroup">
-                            <label>Receiver (nameDest)</label>
-                            <input id="nameDest" type="text" placeholder="e.g. M938657528">
-                        </div>
-                    </div>
-                </div>
+        <!-- ── FORM VIEW ── -->
+        <div class="view" id="formView">
+            <div class="view-title">Risk Analysis</div>
+            <div class="view-sub">Enter transaction details to run fraud and ring detection.</div>
 
-                <div class="form-section">
-                    <div class="section-label">Transaction</div>
-                    <div class="fgrid fgrid-2" style="margin-bottom:10px">
-                        <div class="fgroup">
-                            <label>Amount ($)</label>
-                            <input id="amount" type="number" step="0.01" placeholder="0.00" required>
-                        </div>
-                        <div class="fgroup">
-                            <label>Type</label>
-                            <select id="txn_type" required>
-                                <option value="">Select type</option>
-                                <option value="CASH_IN">Cash In</option>
-                                <option value="CASH_OUT">Cash Out</option>
-                                <option value="DEBIT">Debit</option>
-                                <option value="PAYMENT">Payment</option>
-                                <option value="TRANSFER">Transfer</option>
-                            </select>
+            <!-- Presets -->
+            <div class="preset-row">
+                <button class="preset preset-fraud" id="loadFraud" type="button">Load Fraud Sample</button>
+                <button class="preset preset-legit" id="loadLegit" type="button">Load Legit Sample</button>
+                <button class="preset preset-ring" id="loadRing" type="button">Load Ring Sample</button>
+            </div>
+
+            <!-- Form -->
+            <form id="txnForm">
+                <div class="form-card">
+
+                    <div class="form-section">
+                        <div class="section-label">Account IDs <span
+                                style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--t3)">(optional —
+                                enables ring lookup)</span></div>
+                        <div class="fgrid fgrid-2">
+                            <div class="fgroup">
+                                <label>Sender (nameOrig)</label>
+                                <input id="nameOrig" type="text" placeholder="e.g. C1503476614">
+                            </div>
+                            <div class="fgroup">
+                                <label>Receiver (nameDest)</label>
+                                <input id="nameDest" type="text" placeholder="e.g. M938657528">
+                            </div>
                         </div>
                     </div>
-                    <div class="fgrid fgrid-3">
-                        <div class="fgroup">
-                            <label>Hour of Day (0–23)</label>
-                            <input id="hours_day" type="number" min="0" max="23" placeholder="14" required>
-                        </div>
-                        <div class="fgroup">
-                            <label>Hrs Since Last Txn</label>
-                            <input id="recency_hours" type="number" step="0.1" placeholder="24" required>
-                        </div>
-                        <div class="fgroup">
-                            <label>Txns in Last 24h</label>
-                            <input id="txn_count_24h" type="number" placeholder="0" required>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="form-section">
-                    <div class="section-label">Origin Account Balances</div>
-                    <div class="fgrid fgrid-2">
-                        <div class="fgroup">
-                            <label>Balance Before ($)</label>
-                            <input id="oldbalanceOrg" type="number" step="0.01" placeholder="0.00" required>
+                    <div class="form-section">
+                        <div class="section-label">Transaction</div>
+                        <div class="fgrid fgrid-2" style="margin-bottom:10px">
+                            <div class="fgroup">
+                                <label>Amount ($)</label>
+                                <input id="amount" type="number" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="fgroup">
+                                <label>Type</label>
+                                <select id="txn_type" required>
+                                    <option value="">Select type</option>
+                                    <option value="CASH_IN">Cash In</option>
+                                    <option value="CASH_OUT">Cash Out</option>
+                                    <option value="DEBIT">Debit</option>
+                                    <option value="PAYMENT">Payment</option>
+                                    <option value="TRANSFER">Transfer</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="fgroup">
-                            <label>Balance After ($)</label>
-                            <input id="newbalanceOrig" type="number" step="0.01" placeholder="0.00" required>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <div class="section-label">Destination Account Balances</div>
-                    <div class="fgrid fgrid-2">
-                        <div class="fgroup">
-                            <label>Balance Before ($)</label>
-                            <input id="oldbalanceDest" type="number" step="0.01" placeholder="0.00" required>
-                        </div>
-                        <div class="fgroup">
-                            <label>Balance After ($)</label>
-                            <input id="newbalanceDest" type="number" step="0.01" placeholder="0.00" required>
+                        <div class="fgrid fgrid-3">
+                            <div class="fgroup">
+                                <label>Hour of Day (0–23)</label>
+                                <input id="hours_day" type="number" min="0" max="23" placeholder="14" required>
+                            </div>
+                            <div class="fgroup">
+                                <label>Hrs Since Last Txn</label>
+                                <input id="recency_hours" type="number" step="0.1" placeholder="24" required>
+                            </div>
+                            <div class="fgroup">
+                                <label>Txns in Last 24h</label>
+                                <input id="txn_count_24h" type="number" placeholder="0" required>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-section">
-                    <div class="section-label">Behavioural Flags</div>
-                    <div class="fgrid" style="max-width:300px">
-                        <div class="fgroup">
-                            <label>New Destination?</label>
-                            <select id="is_dest_new" required>
-                                <option value="0">No — known recipient</option>
-                                <option value="1">Yes — first-time recipient</option>
-                            </select>
+                    <div class="form-section">
+                        <div class="section-label">Origin Account Balances</div>
+                        <div class="fgrid fgrid-2">
+                            <div class="fgroup">
+                                <label>Balance Before ($)</label>
+                                <input id="oldbalanceOrg" type="number" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="fgroup">
+                                <label>Balance After ($)</label>
+                                <input id="newbalanceOrig" type="number" step="0.01" placeholder="0.00" required>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-            </div><!-- /form-card -->
+                    <div class="form-section">
+                        <div class="section-label">Destination Account Balances</div>
+                        <div class="fgrid fgrid-2">
+                            <div class="fgroup">
+                                <label>Balance Before ($)</label>
+                                <input id="oldbalanceDest" type="number" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="fgroup">
+                                <label>Balance After ($)</label>
+                                <input id="newbalanceDest" type="number" step="0.01" placeholder="0.00" required>
+                            </div>
+                        </div>
+                    </div>
 
-            <button type="button" class="submit-btn" id="submitBtn" onclick="runAnalysis()">
-                Run Analysis
-            </button>
-        </form>
-    </div><!-- /formView -->
+                    <div class="form-section">
+                        <div class="section-label">Behavioural Flags</div>
+                        <div class="fgrid" style="max-width:300px">
+                            <div class="fgroup">
+                                <label>New Destination?</label>
+                                <select id="is_dest_new" required>
+                                    <option value="0">No — known recipient</option>
+                                    <option value="1">Yes — first-time recipient</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-    <!-- ── RESULTS VIEW ── -->
-    <div class="view hidden" id="resultsView"></div>
+                </div><!-- /form-card -->
 
-</div><!-- /page -->
+                <button type="button" class="submit-btn" id="submitBtn" onclick="runAnalysis()">
+                    Run Analysis
+                </button>
+            </form>
+        </div><!-- /formView -->
 
-<script>
-    const PRESETS = {
-        fraud: { nameOrig:'C1503476614', nameDest:'C539633851',  amount:181935.37, txn_type:'TRANSFER', hours_day:3,  recency_hours:1000000, txn_count_24h:0, is_dest_new:'1', oldbalanceOrg:181935.37, newbalanceOrig:0,     oldbalanceDest:0, newbalanceDest:0        },
-        legit: { nameOrig:'C423543548',  nameDest:'M1490931456', amount:4200,      txn_type:'PAYMENT',  hours_day:9,  recency_hours:48,      txn_count_24h:0, is_dest_new:'0', oldbalanceOrg:18543,     newbalanceOrig:14343, oldbalanceDest:0, newbalanceDest:0        },
-        ring:  { nameOrig:'C334722206',  nameDest:'C1097957850', amount:282536.77, txn_type:'TRANSFER', hours_day:14, recency_hours:2.5,     txn_count_24h:3, is_dest_new:'0', oldbalanceOrg:282536.77, newbalanceOrig:0,     oldbalanceDest:0, newbalanceDest:282536.77 },
-    };
+        <!-- ── RESULTS VIEW ── -->
+        <div class="view hidden" id="resultsView"></div>
 
-    function fill(p) {
-        ['nameOrig','nameDest','amount','hours_day','recency_hours','txn_count_24h','is_dest_new',
-         'oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest'].forEach(k => {
-            document.getElementById(k).value = p[k];
-        });
-        document.getElementById('txn_type').value = p.txn_type;
-    }
-    document.getElementById('loadFraud').onclick = () => fill(PRESETS.fraud);
-    document.getElementById('loadLegit').onclick = () => fill(PRESETS.legit);
-    document.getElementById('loadRing').onclick  = () => fill(PRESETS.ring);
+    </div><!-- /page -->
 
-    function showForm() {
-        document.getElementById('resultsView').classList.add('hidden');
-        const fv = document.getElementById('formView');
-        fv.classList.remove('hidden');
-        fv.classList.add('fade-in');
-        document.getElementById('backBtn').style.display = 'none';
-        setTimeout(() => fv.classList.remove('fade-in'), 400);
-    }
-
-    function showResults(html) {
-        document.getElementById('formView').classList.add('hidden');
-        const rv = document.getElementById('resultsView');
-        rv.innerHTML = html;
-        rv.classList.remove('hidden');
-        rv.classList.add('fade-in');
-        document.getElementById('backBtn').style.display = 'flex';
-        setTimeout(() => rv.classList.remove('fade-in'), 400);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    async function runAnalysis() {
-        const form = document.getElementById('txnForm');
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-
-        const btn = document.getElementById('submitBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span>Analysing…';
-
-        const t = document.getElementById('txn_type').value;
-        const payload = {
-            nameOrig:       document.getElementById('nameOrig').value.trim(),
-            nameDest:       document.getElementById('nameDest').value.trim(),
-            amount:         parseFloat(document.getElementById('amount').value),
-            recency_hours:  parseFloat(document.getElementById('recency_hours').value),
-            txn_count_24h:  parseInt(document.getElementById('txn_count_24h').value),
-            is_dest_new:    parseInt(document.getElementById('is_dest_new').value),
-            hours_day:      parseInt(document.getElementById('hours_day').value),
-            oldbalanceOrg:  parseFloat(document.getElementById('oldbalanceOrg').value),
-            newbalanceOrig: parseFloat(document.getElementById('newbalanceOrig').value),
-            oldbalanceDest: parseFloat(document.getElementById('oldbalanceDest').value),
-            newbalanceDest: parseFloat(document.getElementById('newbalanceDest').value),
-            type_CASH_IN:   t==='CASH_IN'  ?1:0,
-            type_CASH_OUT:  t==='CASH_OUT'  ?1:0,
-            type_DEBIT:     t==='DEBIT'     ?1:0,
-            type_PAYMENT:   t==='PAYMENT'   ?1:0,
-            type_TRANSFER:  t==='TRANSFER'  ?1:0,
+    <script>
+        const PRESETS = {
+            fraud: { nameOrig: 'C1503476614', nameDest: 'C539633851', amount: 181935.37, txn_type: 'TRANSFER', hours_day: 3, recency_hours: 1000000, txn_count_24h: 0, is_dest_new: '1', oldbalanceOrg: 181935.37, newbalanceOrig: 0, oldbalanceDest: 0, newbalanceDest: 0 },
+            legit: { nameOrig: 'C423543548', nameDest: 'M1490931456', amount: 4200, txn_type: 'PAYMENT', hours_day: 9, recency_hours: 48, txn_count_24h: 0, is_dest_new: '0', oldbalanceOrg: 18543, newbalanceOrig: 14343, oldbalanceDest: 0, newbalanceDest: 0 },
+            ring: { nameOrig: 'C334722206', nameDest: 'C1097957850', amount: 282536.77, txn_type: 'TRANSFER', hours_day: 14, recency_hours: 2.5, txn_count_24h: 3, is_dest_new: '0', oldbalanceOrg: 282536.77, newbalanceOrig: 0, oldbalanceDest: 0, newbalanceDest: 282536.77 },
         };
 
-        try {
-            const res = await fetch('/predict', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            const r = await res.json();
-            // Store globally for chat
-            currentResult  = r;
-            currentPayload = payload;
-            document.getElementById('chatMsgs').innerHTML =
-                '<div class="chat-empty" id="chatEmpty">Ask anything about this transaction<br>or how the scores were calculated.</div>';
-            showResults(buildResults(r, payload));
-        } catch (err) {
-            showResults(`
+        function fill(p) {
+            ['nameOrig', 'nameDest', 'amount', 'hours_day', 'recency_hours', 'txn_count_24h', 'is_dest_new',
+                'oldbalanceOrg', 'newbalanceOrig', 'oldbalanceDest', 'newbalanceDest'].forEach(k => {
+                    document.getElementById(k).value = p[k];
+                });
+            document.getElementById('txn_type').value = p.txn_type;
+        }
+        document.getElementById('loadFraud').onclick = () => fill(PRESETS.fraud);
+        document.getElementById('loadLegit').onclick = () => fill(PRESETS.legit);
+        document.getElementById('loadRing').onclick = () => fill(PRESETS.ring);
+
+        function showForm() {
+            document.getElementById('resultsView').classList.add('hidden');
+            const fv = document.getElementById('formView');
+            fv.classList.remove('hidden');
+            fv.classList.add('fade-in');
+            document.getElementById('backBtn').style.display = 'none';
+            setTimeout(() => fv.classList.remove('fade-in'), 400);
+        }
+
+        function showResults(html) {
+            document.getElementById('formView').classList.add('hidden');
+            const rv = document.getElementById('resultsView');
+            rv.innerHTML = html;
+            rv.classList.remove('hidden');
+            rv.classList.add('fade-in');
+            document.getElementById('backBtn').style.display = 'flex';
+            setTimeout(() => rv.classList.remove('fade-in'), 400);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function runAnalysis() {
+            const form = document.getElementById('txnForm');
+            if (!form.checkValidity()) { form.reportValidity(); return; }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Analysing…';
+
+            const t = document.getElementById('txn_type').value;
+            const payload = {
+                nameOrig: document.getElementById('nameOrig').value.trim(),
+                nameDest: document.getElementById('nameDest').value.trim(),
+                amount: parseFloat(document.getElementById('amount').value),
+                recency_hours: parseFloat(document.getElementById('recency_hours').value),
+                txn_count_24h: parseInt(document.getElementById('txn_count_24h').value),
+                is_dest_new: parseInt(document.getElementById('is_dest_new').value),
+                hours_day: parseInt(document.getElementById('hours_day').value),
+                oldbalanceOrg: parseFloat(document.getElementById('oldbalanceOrg').value),
+                newbalanceOrig: parseFloat(document.getElementById('newbalanceOrig').value),
+                oldbalanceDest: parseFloat(document.getElementById('oldbalanceDest').value),
+                newbalanceDest: parseFloat(document.getElementById('newbalanceDest').value),
+                type_CASH_IN: t === 'CASH_IN' ? 1 : 0,
+                type_CASH_OUT: t === 'CASH_OUT' ? 1 : 0,
+                type_DEBIT: t === 'DEBIT' ? 1 : 0,
+                type_PAYMENT: t === 'PAYMENT' ? 1 : 0,
+                type_TRANSFER: t === 'TRANSFER' ? 1 : 0,
+            };
+
+            try {
+                const res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const r = await res.json();
+                // Store globally for chat
+                currentResult = r;
+                currentPayload = payload;
+                document.getElementById('chatMsgs').innerHTML =
+                    '<div class="chat-empty" id="chatEmpty">Ask anything about this transaction<br>or how the scores were calculated.</div>';
+                showResults(buildResults(r, payload));
+            } catch (err) {
+                showResults(`
                 <div class="info-card" style="border-color:var(--red-bd)">
                     <div class="card-body">
                         <div class="row"><span class="row-key">Error</span><span class="row-val bad">Connection failed</span></div>
                         <div style="padding:12px 16px;font-size:12px;color:var(--t3)">Make sure the server is running.<br>${err}</div>
                     </div>
                 </div>`);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = 'Run Analysis';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Run Analysis';
+            }
         }
-    }
 
-    const pct = v => (v * 100).toFixed(2) + '%';
-    const fmtAmt = v => '$' + parseFloat(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const pct = v => (v * 100).toFixed(2) + '%';
+        const fmtAmt = v => '$' + parseFloat(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    function riskPill(level) {
-        const cls = level==='HIGH' ? 'pill-red' : level==='MEDIUM' ? 'pill-amber' : 'pill-green';
-        return `<span class="pill ${cls}">${level}</span>`;
-    }
+        function riskPill(level) {
+            const cls = level === 'HIGH' ? 'pill-red' : level === 'MEDIUM' ? 'pill-amber' : 'pill-green';
+            return `<span class="pill ${cls}">${level}</span>`;
+        }
 
-    function buildResults(r, p) {
-        const isFraud = r.is_fraud;
-        const inRing  = r.in_ring;
-        const v       = isFraud ? 'fraud' : 'legit';
+        function buildResults(r, p) {
+            const isFraud = r.is_fraud;
+            const inRing = r.in_ring;
+            const v = isFraud ? 'fraud' : 'legit';
 
-        /* Verdict */
-        const verdict = `
+            /* Verdict */
+            const verdict = `
         <div class="verdict ${v} r1">
             <div class="verdict-icon">${isFraud ? '✕' : '✓'}</div>
             <div class="verdict-text">
                 <div class="verdict-label">${isFraud ? 'Fraud Detected' : 'Legitimate Transaction'}</div>
                 <div class="verdict-sub">${fmtAmt(p.amount)} · ${document.getElementById('txn_type').value}</div>
                 <div class="pill-row">
-                    <span class="pill ${isFraud ? 'pill-red':'pill-green'}">${r.decision}</span>
+                    <span class="pill ${isFraud ? 'pill-red' : 'pill-green'}">${r.decision}</span>
                     ${riskPill(r.final_risk_level)}
                     ${inRing ? `<span class="pill pill-orange">⚑ ${r.ring_pattern}</span>` : `<span class="pill pill-slate">No Ring</span>`}
                 </div>
             </div>
         </div>`;
 
-        /* Scores */
-        const scores = `
+            /* Scores */
+            const scores = `
         <div class="score-grid r2">
             <div class="score-card">
                 <div class="score-label">Fraud Score</div>
                 <div class="score-val col-red">${pct(r.fraud_probability)}</div>
-                <div class="bar-track"><div class="bar-fill bar-red" style="width:${Math.round(r.fraud_probability*100)}%"></div></div>
+                <div class="bar-track"><div class="bar-fill bar-red" style="width:${Math.round(r.fraud_probability * 100)}%"></div></div>
                 <div class="score-src">Model</div>
             </div>
             <div class="score-card">
                 <div class="score-label">Ring Score</div>
                 <div class="score-val col-orange">${pct(r.ring_score)}</div>
-                <div class="bar-track"><div class="bar-fill bar-orange" style="width:${Math.round(r.ring_score*100)}%"></div></div>
+                <div class="bar-track"><div class="bar-fill bar-orange" style="width:${Math.round(r.ring_score * 100)}%"></div></div>
                 <div class="score-src">Graph analysis</div>
             </div>
             <div class="score-card">
                 <div class="score-label">Final Risk</div>
                 <div class="score-val col-indigo">${pct(r.final_risk_score)}</div>
-                <div class="bar-track"><div class="bar-fill bar-indigo" style="width:${Math.round(r.final_risk_score*100)}%"></div></div>
+                <div class="bar-track"><div class="bar-fill bar-indigo" style="width:${Math.round(r.final_risk_score * 100)}%"></div></div>
                 <div class="score-src">Combined signal</div>
             </div>
         </div>`;
 
-    function chainSVG(chain, nameOrig, nameDest) {
-        const R       = 13;
-        const PAD     = 16;
-        const MAX_W   = 560;
-        const n       = chain.length;
-        const spacing = n > 1 ? Math.min(62, (MAX_W - 2 * PAD - 2 * R) / (n - 1)) : 62;
-        const svgW    = n === 1 ? 2 * R + 2 * PAD : 2 * PAD + (n - 1) * spacing + 2 * R;
-        const svgH    = 66;
-        const cy      = 25;
-        const C_INDIGO = '#5147E5';
-        const C_ORANGE = '#EA580C';
-        const C_SLATE  = '#E2E8F0';
-        const C_SL_STR = '#94A3B8';
-        const cx = i => PAD + R + i * spacing;
-        const mid = 'arr' + Math.random().toString(36).slice(2);
+            function chainSVG(chain, nameOrig, nameDest) {
+                const R = 13;
+                const PAD = 16;
+                const MAX_W = 560;
+                const n = chain.length;
+                const spacing = n > 1 ? Math.min(62, (MAX_W - 2 * PAD - 2 * R) / (n - 1)) : 62;
+                const svgW = n === 1 ? 2 * R + 2 * PAD : 2 * PAD + (n - 1) * spacing + 2 * R;
+                const svgH = 66;
+                const cy = 25;
+                const C_INDIGO = '#5147E5';
+                const C_ORANGE = '#EA580C';
+                const C_SLATE = '#E2E8F0';
+                const C_SL_STR = '#94A3B8';
+                const cx = i => PAD + R + i * spacing;
+                const mid = 'arr' + Math.random().toString(36).slice(2);
 
-        let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}">
+                let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}">
 <defs><marker id="${mid}" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
   <path d="M0,0 L0,6 L6,3z" fill="#CBD5E1"/></marker></defs>`;
 
-        for (let i = 0; i < n - 1; i++) {
-            const x1 = cx(i) + R + 2, x2 = cx(i + 1) - R - 4;
-            svg += `<line x1="${x1}" y1="${cy}" x2="${x2}" y2="${cy}" stroke="#CBD5E1" stroke-width="1.5" marker-end="url(#${mid})"/>`;
-        }
-        for (let i = 0; i < n; i++) {
-            const x    = cx(i);
-            const acct = chain[i];
-            const isO  = acct === nameOrig;
-            const isD  = acct === nameDest;
-            const fill   = isO ? C_INDIGO : isD ? C_ORANGE : C_SLATE;
-            const stroke = isO ? C_INDIGO : isD ? C_ORANGE : '#CBD5E1';
-            const tFill  = (isO || isD) ? '#FFFFFF' : '#64748B';
-            const label  = acct.length > 6 ? acct[0] + '\u2026' + acct.slice(-4) : acct;
-            svg += `<circle cx="${x}" cy="${cy}" r="${R}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
-            svg += `<text x="${x}" y="${cy + 0.5}" text-anchor="middle" dominant-baseline="middle" fill="${tFill}" font-size="8.5" font-family="monospace" font-weight="700">${i + 1}</text>`;
-            svg += `<text x="${x}" y="${cy + R + 13}" text-anchor="middle" fill="${C_SL_STR}" font-size="9" font-family="monospace">${label}</text>`;
-        }
-        svg += '</svg>';
-        return svg;
-    }
+                for (let i = 0; i < n - 1; i++) {
+                    const x1 = cx(i) + R + 2, x2 = cx(i + 1) - R - 4;
+                    svg += `<line x1="${x1}" y1="${cy}" x2="${x2}" y2="${cy}" stroke="#CBD5E1" stroke-width="1.5" marker-end="url(#${mid})"/>`;
+                }
+                for (let i = 0; i < n; i++) {
+                    const x = cx(i);
+                    const acct = chain[i];
+                    const isO = acct === nameOrig;
+                    const isD = acct === nameDest;
+                    const fill = isO ? C_INDIGO : isD ? C_ORANGE : C_SLATE;
+                    const stroke = isO ? C_INDIGO : isD ? C_ORANGE : '#CBD5E1';
+                    const tFill = (isO || isD) ? '#FFFFFF' : '#64748B';
+                    const label = acct.length > 6 ? acct[0] + '\u2026' + acct.slice(-4) : acct;
+                    svg += `<circle cx="${x}" cy="${cy}" r="${R}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+                    svg += `<text x="${x}" y="${cy + 0.5}" text-anchor="middle" dominant-baseline="middle" fill="${tFill}" font-size="8.5" font-family="monospace" font-weight="700">${i + 1}</text>`;
+                    svg += `<text x="${x}" y="${cy + R + 13}" text-anchor="middle" fill="${C_SL_STR}" font-size="9" font-family="monospace">${label}</text>`;
+                }
+                svg += '</svg>';
+                return svg;
+            }
 
-        /* Ring card */
+            /* Ring card */
 
-        const srWarn  = r.sender_ring_score   > 0 ? 'warn' : '';
-        const rrWarn  = r.receiver_ring_score > 0 ? 'warn' : '';
-        const hasChain = inRing && Array.isArray(r.ring_chain) && r.ring_chain.length >= 2;
-        const ring = `
+            const srWarn = r.sender_ring_score > 0 ? 'warn' : '';
+            const rrWarn = r.receiver_ring_score > 0 ? 'warn' : '';
+            const hasChain = inRing && Array.isArray(r.ring_chain) && r.ring_chain.length >= 2;
+            const ring = `
         <div class="info-card ${inRing ? 'ring-active' : ''} r3">
             <div class="card-header">
                 <span class="card-header-title">Network Analysis</span>
@@ -965,143 +1281,143 @@
             </div>` : ''}
         </div>`;
 
-        /* Summary */
-        const summary = `
+            /* Summary */
+            const summary = `
         <div class="info-card r4">
             <div class="card-header">
                 <span class="card-header-title">AI Summary</span>
             </div>
-            <p class="summary-text">${r.summary.replace(/\*{1,2}(.+?)\*{1,2}/g,'$1').replace(/`(.+?)`/g,'$1')}</p>
+            <p class="summary-text">${r.summary.replace(/\*{1,2}(.+?)\*{1,2}/g, '$1').replace(/`(.+?)`/g, '$1')}</p>
         </div>
         <button class="open-chat-btn r4" onclick="openChat()" style="margin-top:8px">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             Ask AI about this transaction
         </button>`;
 
-        return verdict + scores + ring + summary;
-    }
+            return verdict + scores + ring + summary;
+        }
 
-    let currentResult  = null;
-    let currentPayload = null;
+        let currentResult = null;
+        let currentPayload = null;
 
-    function openChat() {
-        if (!currentResult) return;
-        const r = currentResult, p = currentPayload;
-        const pct = v => (v * 100).toFixed(1) + '%';
-        const fmt = v => '$' + parseFloat(v).toLocaleString('en-US', { minimumFractionDigits: 2 });
-        document.getElementById('chatCtx').innerHTML = `
+        function openChat() {
+            if (!currentResult) return;
+            const r = currentResult, p = currentPayload;
+            const pct = v => (v * 100).toFixed(1) + '%';
+            const fmt = v => '$' + parseFloat(v).toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('chatCtx').innerHTML = `
             <span class="chat-ctx-item">Amount <strong>${fmt(p.amount)}</strong></span>
             <span class="chat-ctx-item">Decision <strong style="color:${r.is_fraud ? 'var(--red)' : 'var(--green)'}">${r.decision}</strong></span>
             <span class="chat-ctx-item">Fraud <strong>${pct(r.fraud_probability)}</strong></span>
             <span class="chat-ctx-item">Ring <strong>${pct(r.ring_score)}</strong></span>
             <span class="chat-ctx-item">Final Risk <strong>${pct(r.final_risk_score)}</strong></span>`;
-        document.getElementById('chatDrawer').classList.add('open');
-        document.getElementById('chatBackdrop').classList.add('open');
-        // Wire auto-grow once
-        const ta = document.getElementById('chatInput');
-        ta.oninput = () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; };
-        setTimeout(() => ta.focus(), 200);
-    }
-
-    function closeChat() {
-        document.getElementById('chatDrawer').classList.remove('open');
-        document.getElementById('chatBackdrop').classList.remove('open');
-    }
-
-    async function sendChat() {
-        const input = document.getElementById('chatInput');
-        const btn   = document.getElementById('chatSendBtn');
-        const msg   = input.value.trim();
-        if (!msg || !currentResult) return;
-
-        const msgs = document.getElementById('chatMsgs');
-        // Hide empty state
-        const empty = document.getElementById('chatEmpty');
-        if (empty) empty.remove();
-
-        input.value = '';
-        input.style.height = 'auto';  // reset height after send
-        btn.disabled = true;
-
-        // User bubble
-        msgs.innerHTML += `<div class="msg msg-user">${msg}</div>`;
-        // Typing indicator
-        const tid = 'typing-' + Date.now();
-        msgs.innerHTML += `<div class="msg msg-bot msg-typing" id="${tid}">Thinking…</div>`;
-        msgs.scrollTop = msgs.scrollHeight;
-
-        const r = currentResult, p = currentPayload;
-        try {
-            const res = await fetch('/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: msg,
-                    context: {
-                        // Transaction
-                        amount:              p.amount,
-                        txn_type:            document.getElementById('txn_type')?.value || '',
-                        hours_day:           p.hours_day,
-                        recency_hours:       p.recency_hours,
-                        txn_count_24h:       p.txn_count_24h,
-                        is_dest_new:         p.is_dest_new,
-                        // Balances
-                        oldbalanceOrg:       p.oldbalanceOrg,
-                        newbalanceOrig:      p.newbalanceOrig,
-                        oldbalanceDest:      p.oldbalanceDest,
-                        newbalanceDest:      p.newbalanceDest,
-                        // Scores
-                        fraud_probability:   r.fraud_probability,
-                        sender_ring_score:   r.sender_ring_score,
-                        receiver_ring_score: r.receiver_ring_score,
-                        ring_score:          r.ring_score,
-                        final_risk_score:    r.final_risk_score,
-                        decision:            r.decision,
-                        ring_pattern:        r.ring_pattern,
-                        ring_detail:         r.ring_detail,
-                        ring_chain:          r.ring_chain,
-                    }
-                }),
-            });
-            const data = await res.json();
-            const clean = data.response
-                .replace(/\*{1,2}(.+?)\*{1,2}/g, '$1')
-                .replace(/`(.+?)`/g, '$1');
-            document.getElementById(tid).outerHTML =
-                `<div class="msg msg-bot">${clean}</div>`;
-        } catch {
-            document.getElementById(tid).outerHTML =
-                `<div class="msg msg-bot msg-typing">Could not reach server.</div>`;
-        } finally {
-            btn.disabled = false;
-            msgs.scrollTop = msgs.scrollHeight;
-            input.focus();
+            document.getElementById('chatDrawer').classList.add('open');
+            document.getElementById('chatBackdrop').classList.add('open');
+            // Wire auto-grow once
+            const ta = document.getElementById('chatInput');
+            ta.oninput = () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; };
+            setTimeout(() => ta.focus(), 200);
         }
-    }
-</script>
 
-<!-- ── Chat Drawer ── -->
-<div class="chat-backdrop" id="chatBackdrop" onclick="closeChat()"></div>
-<div class="chat-drawer" id="chatDrawer">
-    <div class="chat-hdr">
-        <div class="chat-hdr-info">
-            <div class="chat-hdr-title">SecurePay Chat</div>
+        function closeChat() {
+            document.getElementById('chatDrawer').classList.remove('open');
+            document.getElementById('chatBackdrop').classList.remove('open');
+        }
+
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const btn = document.getElementById('chatSendBtn');
+            const msg = input.value.trim();
+            if (!msg || !currentResult) return;
+
+            const msgs = document.getElementById('chatMsgs');
+            // Hide empty state
+            const empty = document.getElementById('chatEmpty');
+            if (empty) empty.remove();
+
+            input.value = '';
+            input.style.height = 'auto';  // reset height after send
+            btn.disabled = true;
+
+            // User bubble
+            msgs.innerHTML += `<div class="msg msg-user">${msg}</div>`;
+            // Typing indicator
+            const tid = 'typing-' + Date.now();
+            msgs.innerHTML += `<div class="msg msg-bot msg-typing" id="${tid}">Thinking…</div>`;
+            msgs.scrollTop = msgs.scrollHeight;
+
+            const r = currentResult, p = currentPayload;
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: msg,
+                        context: {
+                            // Transaction
+                            amount: p.amount,
+                            txn_type: document.getElementById('txn_type')?.value || '',
+                            hours_day: p.hours_day,
+                            recency_hours: p.recency_hours,
+                            txn_count_24h: p.txn_count_24h,
+                            is_dest_new: p.is_dest_new,
+                            // Balances
+                            oldbalanceOrg: p.oldbalanceOrg,
+                            newbalanceOrig: p.newbalanceOrig,
+                            oldbalanceDest: p.oldbalanceDest,
+                            newbalanceDest: p.newbalanceDest,
+                            // Scores
+                            fraud_probability: r.fraud_probability,
+                            sender_ring_score: r.sender_ring_score,
+                            receiver_ring_score: r.receiver_ring_score,
+                            ring_score: r.ring_score,
+                            final_risk_score: r.final_risk_score,
+                            decision: r.decision,
+                            ring_pattern: r.ring_pattern,
+                            ring_detail: r.ring_detail,
+                            ring_chain: r.ring_chain,
+                        }
+                    }),
+                });
+                const data = await res.json();
+                const clean = data.response
+                    .replace(/\*{1,2}(.+?)\*{1,2}/g, '$1')
+                    .replace(/`(.+?)`/g, '$1');
+                document.getElementById(tid).outerHTML =
+                    `<div class="msg msg-bot">${clean}</div>`;
+            } catch {
+                document.getElementById(tid).outerHTML =
+                    `<div class="msg msg-bot msg-typing">Could not reach server.</div>`;
+            } finally {
+                btn.disabled = false;
+                msgs.scrollTop = msgs.scrollHeight;
+                input.focus();
+            }
+        }
+    </script>
+
+    <!-- ── Chat Drawer ── -->
+    <div class="chat-backdrop" id="chatBackdrop" onclick="closeChat()"></div>
+    <div class="chat-drawer" id="chatDrawer">
+        <div class="chat-hdr">
+            <div class="chat-hdr-info">
+                <div class="chat-hdr-title">SecurePay Chat</div>
+            </div>
+            <button class="chat-close-btn" onclick="closeChat()">&#x2715;</button>
         </div>
-        <button class="chat-close-btn" onclick="closeChat()">&#x2715;</button>
-    </div>
-    <div class="chat-ctx" id="chatCtx"></div>
-    <div class="chat-msgs" id="chatMsgs">
-        <div class="chat-empty" id="chatEmpty">
-            Ask anything about this transaction<br>or how the scores were calculated.
+        <div class="chat-ctx" id="chatCtx"></div>
+        <div class="chat-msgs" id="chatMsgs">
+            <div class="chat-empty" id="chatEmpty">
+                Ask anything about this transaction<br>or how the scores were calculated.
+            </div>
+        </div>
+        <div class="chat-foot">
+            <textarea id="chatInput" class="chat-text-input" rows="1" placeholder="e.g. Why is the ring score high?"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+            <button class="chat-send-btn" id="chatSendBtn" onclick="sendChat()">&#x2192;</button>
         </div>
     </div>
-    <div class="chat-foot">
-        <textarea id="chatInput" class="chat-text-input" rows="1"
-               placeholder="e.g. Why is the ring score high?"
-               onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
-        <button class="chat-send-btn" id="chatSendBtn" onclick="sendChat()">&#x2192;</button>
-    </div>
-</div>
 
 </body>
+
 </html>
